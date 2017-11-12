@@ -1,6 +1,7 @@
 /**
  * Created by scarbone on 11/11/17.
  */
+'use strict';
 let express = require('express');
 let bodyParser = require('body-parser');
 let app = express();
