@@ -28,12 +28,27 @@
 </head>
 
 
-
-
 <body onload="startGame()" style="background-color: #2b669a;">
 
 <button class="btn btn-success btn-lg" onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">ACCELERATE</button>
-<button class="btn btn-info btn-lg" onclick="addEntry()">LEADERBOARD</button>
-
+<button class="btn btn-info btn-lg" onclick="toggleLeaderBoard()">LEADERBOARD</button>
+<div style="background-color: white; width: 40%; border-radius: 10px">
+    <div id="leaderboard" class="container" style="display: none;">
+        <div class="row">
+            <div class="col-sm-2">
+                <span>#</span>
+            </div>
+            <div class="col-sm-2">
+                <span>USERNAME</span>
+            </div>
+            <div class="col-sm-2">
+                <span>SCORE</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    initBoard();
+</script>
 </body>
 </html>

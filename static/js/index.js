@@ -4,6 +4,7 @@
 var myGamePiece;
 var myObstacles = [];
 var myScore;
+
 var screenWidth = window.innerWidth
     || document.documentElement.clientWidth
     || document.body.clientWidth;
@@ -90,7 +91,7 @@ function updateGameArea() {
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
     for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
-            
+
             return;
         }
     }
