@@ -10,10 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^3.3.7",
-    "cors": "^2.8.4",
     "express": "^4.16.2",
     "firebase": "^4.6.2",
     "jquery": "^3.2.1",
     "node": "^9.1.0"
+  },
+  "engines": {
+    "node": "6.11.0"
   }
 }
