@@ -4,7 +4,7 @@
 let myGamePiece;
 let myObstacles = [];
 let myScore;
-
+let interval = 150;
 let screenWidth = window.innerWidth
     || document.documentElement.clientWidth
     || document.body.clientWidth;
@@ -64,6 +64,13 @@ function component(width, height, color, x, y, type) {
         this.x += this.speedX;
         this.y += this.speedY + this.gravitySpeed;
         this.hitBottom();
+        this.hitTop();
+    };
+    this.hitTop = function () {
+        if(this.y < 0){
+            this.y = 0;
+            this.gravitySpeed = 0;
+        }
     };
     this.hitBottom = function() {
         var rockbottom = myGameArea.canvas.height - this.height;
@@ -90,6 +97,10 @@ function component(width, height, color, x, y, type) {
 }
 
 function updateGameArea() {
+    if(myGameArea.frameNo % 1000 === 0 && myGameArea.frameNo !== 0){
+        interval -= 5;
+    }
+
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
     for (let i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
@@ -99,7 +110,7 @@ function updateGameArea() {
     }
     myGameArea.clear();
     myGameArea.frameNo += 1;
-    if (myGameArea.frameNo == 1 || everyinterval(150)) {
+    if (myGameArea.frameNo === 1 || everyinterval(interval)) {
         x = myGameArea.canvas.width;
         minHeight = 20;
         maxHeight = 200;
