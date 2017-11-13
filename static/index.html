@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="icon" href="assets/images/phpThumb_generated_thumbnailico">
     <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
     <script>
         var config = {
@@ -30,9 +31,9 @@
 
 <body onload="startGame()" style="background-color: #2b669a;">
 
-<button class="btn btn-success btn-lg" onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">ACCELERATE</button>
-<button class="btn btn-info btn-lg" onclick="toggleLeaderBoard()">LEADERBOARD</button>
-<div style="background-color: white; width: 40%; border-radius: 10px">
+<button class="btn btn-success btn-lg" onclick="toggleLeaderBoard()">LEADERBOARD</button>
+<button class="btn btn-info btn-lg" onclick="addEntry(getScore())">ADD SCORE</button>
+<div style="background-color: white; width: 35%; border-radius: 10px; margin: auto">
     <div id="leaderboard" class="container" style="display: none;">
         <div class="row">
             <div class="col-sm-2">

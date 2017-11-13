@@ -1,26 +1,28 @@
 /**
  * Created by scarbone on 11/11/17.
  */
-var myGamePiece;
-var myObstacles = [];
-var myScore;
+let myGamePiece;
+let myObstacles = [];
+let myScore;
 
-var screenWidth = window.innerWidth
+let screenWidth = window.innerWidth
     || document.documentElement.clientWidth
     || document.body.clientWidth;
 
-var screenHeight = window.innerHeight
+let screenHeight = window.innerHeight
     || document.documentElement.clientHeight
     || document.body.clientHeight;
 
+
 function startGame() {
+
     myGamePiece = new component(30, 30, "red", 10, 120);
     myGamePiece.gravity = 0.05;
     myScore = new component("30px", "Consolas", "black", 280, 40, "text");
     myGameArea.start();
 }
 
-var myGameArea = {
+let myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
         this.canvas.width = screenWidth/1.0015;
@@ -89,7 +91,7 @@ function component(width, height, color, x, y, type) {
 
 function updateGameArea() {
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
-    for (i = 0; i < myObstacles.length; i += 1) {
+    for (let i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
 
             return;
@@ -108,7 +110,7 @@ function updateGameArea() {
         myObstacles.push(new component(10, height, "green", x, 0));
         myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
     }
-    for (i = 0; i < myObstacles.length; i += 1) {
+    for (let i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
         myObstacles[i].update();
     }
@@ -119,10 +121,25 @@ function updateGameArea() {
 }
 
 function everyinterval(n) {
-    if ((myGameArea.frameNo / n) % 1 === 0) {return true;}
-    return false;
+    return (myGameArea.frameNo / n) % 1 === 0;
 }
 
 function accelerate(n) {
     myGamePiece.gravity = n;
 }
+function getScore() {
+    return myGameArea.frameNo;
+}
+document.addEventListener('keydown', function (event) {
+    let spaceBar = 32;
+    if(event.keyCode === spaceBar){
+        event.preventDefault();
+        accelerate(-0.2);
+    }
+});
+document.addEventListener('keyup', function (event) {
+    let spaceBar = 32;
+   if(event.keyCode === spaceBar){
+       accelerate(0.05);
+   }
+});

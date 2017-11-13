@@ -2,11 +2,11 @@
  * Created by scarbone on 11/12/17.
  */
 let counter = 1;
+let firebaseRef = firebase.database().ref('leaderboard');
 function initBoard() {
     counter = 1;
-    let firebaseRef = firebase.database().ref('leaderboard');
     let board = document.getElementById('leaderboard');
-    firebaseRef.orderByChild('negativeScore').on('value', function (snapshot) {
+    firebaseRef.orderByChild('negativeScore').limitToFirst(15).on('value', function (snapshot) {
         snapshot.forEach(function (childSnapshots) {
             let row = document.createElement('DIV');
             let usernameCol = document.createElement('DIV');
@@ -33,15 +33,13 @@ function initBoard() {
         });
     });
 }
-function addEntry() {
-    let firebaseRef = firebase.database().ref('leaderboard');
+function addEntry(score) {
     let userName = "Madmax";
-    let score = 299990;
     let hash = Math.random() * 20000000;
     hash = Math.ceil(hash) * 17;
     hash = hash / userName.length + score;
     hash = Math.ceil(hash);
     firebaseRef.child(hash).child('username').set(userName);
     firebaseRef.child(hash).child('score').set(score);
-    firebaseRef.child(hash).child('negativeScore').set(-score);
+    firebaseRef.child(hash).child('negativeScore').set(-1 * score);
 }
