@@ -5,6 +5,7 @@ let myGamePiece;
 let myObstacles = [];
 let myScore;
 let interval = 150;
+let adder = 0;
 let screenWidth = window.innerWidth
     || document.documentElement.clientWidth
     || document.body.clientWidth;
@@ -50,7 +51,7 @@ function component(width, height, color, x, y, type) {
     this.gravitySpeed = 0;
     this.update = function() {
         ctx = myGameArea.context;
-        if (this.type == "text") {
+        if (this.type === "text") {
             ctx.font = this.width + " " + this.height;
             ctx.fillStyle = color;
             ctx.fillText(this.text, this.x, this.y);
@@ -99,6 +100,7 @@ function component(width, height, color, x, y, type) {
 function updateGameArea() {
     if(myGameArea.frameNo % 1000 === 0 && myGameArea.frameNo !== 0){
         interval -= 5;
+        adder += 5;
     }
 
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;

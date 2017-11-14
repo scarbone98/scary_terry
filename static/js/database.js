@@ -6,7 +6,31 @@ let firebaseRef = firebase.database().ref('leaderboard');
 function initBoard() {
     counter = 1;
     let board = document.getElementById('leaderboard');
-    firebaseRef.orderByChild('negativeScore').limitToFirst(15).on('value', function (snapshot) {
+    while (board.firstChild) {
+        board.removeChild(board.firstChild);
+    }
+    let row = document.createElement('DIV');
+    let usernameCol = document.createElement('DIV');
+    let scoreCol = document.createElement('DIV');
+    let placeCol = document.createElement('DIV');
+    let place = document.createElement('SPAN');
+    let username = document.createElement('SPAN');
+    let score = document.createElement('SPAN');
+    place.innerHTML = '#';
+    username.innerHTML = 'USERNAME';
+    score.innerHTML = 'SCORE';
+    row.classList.add('row');
+    usernameCol.classList.add('col-sm-3');
+    scoreCol.classList.add('col-sm-3');
+    place.classList.add('col-sm-3');
+    usernameCol.appendChild(username);
+    scoreCol.appendChild(score);
+    placeCol.appendChild(place);
+    row.appendChild(placeCol);
+    row.appendChild(usernameCol);
+    row.appendChild(scoreCol);
+    board.appendChild(row);
+    firebaseRef.orderByChild('negativeScore').limitToFirst(15).once('value', function (snapshot) {
         snapshot.forEach(function (childSnapshots) {
             let row = document.createElement('DIV');
             let usernameCol = document.createElement('DIV');
@@ -19,9 +43,9 @@ function initBoard() {
             username.innerHTML = childSnapshots.child('username').val();
             score.innerHTML = childSnapshots.child('score').val();
             row.classList.add('row');
-            usernameCol.classList.add('col-sm-2');
-            scoreCol.classList.add('col-sm-2');
-            place.classList.add('col-sm-2');
+            usernameCol.classList.add('col-sm-3');
+            scoreCol.classList.add('col-sm-3');
+            place.classList.add('col-sm-3');
             usernameCol.appendChild(username);
             scoreCol.appendChild(score);
             placeCol.appendChild(place);
@@ -42,4 +66,5 @@ function addEntry(score) {
     firebaseRef.child(hash).child('username').set(userName);
     firebaseRef.child(hash).child('score').set(score);
     firebaseRef.child(hash).child('negativeScore').set(-1 * score);
+    initBoard();
 }
