@@ -20,9 +20,9 @@ function initBoard() {
     username.innerHTML = 'USERNAME';
     score.innerHTML = 'SCORE';
     row.classList.add('row');
-    usernameCol.classList.add('col-sm-3');
-    scoreCol.classList.add('col-sm-3');
-    place.classList.add('col-sm-3');
+    usernameCol.classList.add('col-sm-4');
+    scoreCol.classList.add('col-sm-4');
+    place.classList.add('col-sm-4');
     usernameCol.appendChild(username);
     scoreCol.appendChild(score);
     placeCol.appendChild(place);
@@ -43,9 +43,9 @@ function initBoard() {
             username.innerHTML = childSnapshots.child('username').val();
             score.innerHTML = childSnapshots.child('score').val();
             row.classList.add('row');
-            usernameCol.classList.add('col-sm-3');
-            scoreCol.classList.add('col-sm-3');
-            place.classList.add('col-sm-3');
+            usernameCol.classList.add('col-sm-4');
+            scoreCol.classList.add('col-sm-4');
+            place.classList.add('col-sm-4');
             usernameCol.appendChild(username);
             scoreCol.appendChild(score);
             placeCol.appendChild(place);
