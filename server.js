@@ -21,9 +21,9 @@ app.get('/', function (req, res) {
 app.post('/twitterCall', function (req, res) {
     client.get("https://api.twitter.com/1.1/search/tweets.json?q=geology&count=10",
         [], function (error, tweets, response) {
-            if(error){
+            if (error) {
                 return res.status(400).send(error);
-            }else {
+            } else {
                 let picker = Math.floor(Math.random() * 10);
                 return res.status(200).send(tweets.statuses[picker].text);
             }

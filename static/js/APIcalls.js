@@ -7,8 +7,8 @@ function twitterCall() {
         contentType: 'application/json',
         url: window.location.href + "twitterCall",
         success: function (data) {
-            alert(data);
-            // $("#twitterQuote").html(data);
+            // alert(data);
+            $("#twitterQuote").html(data + " -Anonymous Poet");
         }
     });
 }

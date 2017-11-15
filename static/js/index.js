@@ -6,6 +6,7 @@ let myObstacles = [];
 let myScore;
 let interval = 150;
 let adder = 0;
+let globalInterval;
 let screenWidth = window.innerWidth
     || document.documentElement.clientWidth
     || document.body.clientWidth;
@@ -31,7 +32,8 @@ let myGameArea = {
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
-        this.interval = setInterval(updateGameArea, 20);
+        this.interval = setInterval(updateGameArea, 15);
+        globalInterval = this.interval;
     },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -98,15 +100,16 @@ function component(width, height, color, x, y, type) {
 }
 
 function updateGameArea() {
-    if(myGameArea.frameNo % 1000 === 0 && myGameArea.frameNo !== 0){
-        interval -= 5;
-        adder += 5;
-    }
-
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
     for (let i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
-
+            clearInterval(globalInterval);
+            twitterCall();
+            if(getScore() > scores[scores.length - 1] || scores.length < 15) {
+                toggleAddEntry();
+            }else{
+                toggleLeaderboard();
+            }
             return;
         }
     }

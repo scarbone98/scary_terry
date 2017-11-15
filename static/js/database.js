@@ -3,6 +3,7 @@
  */
 let counter = 1;
 let firebaseRef = firebase.database().ref('leaderboard');
+let scores = [];
 function initBoard() {
     counter = 1;
     let board = document.getElementById('leaderboard');
@@ -54,11 +55,15 @@ function initBoard() {
             row.appendChild(scoreCol);
             board.appendChild(row);
             counter++;
+            scores.push(parseInt(score.innerHTML));
         });
     });
 }
 function addEntry(score) {
-    let userName = "Madmax";
+    let userName = document.getElementById('userName').value;
+    if(userName === ""){
+        userName = "Madmax";
+    }
     let hash = Math.random() * 20000000;
     hash = Math.ceil(hash) * 17;
     hash = hash / userName.length + score;
@@ -67,4 +72,6 @@ function addEntry(score) {
     firebaseRef.child(hash).child('score').set(score);
     firebaseRef.child(hash).child('negativeScore').set(-1 * score);
     initBoard();
+    toggleLeaderboard();
+    toggleAddEntry();
 }

@@ -1,12 +1,10 @@
 /**
  * Created by scarbone on 11/12/17.
  */
-function toggleLeaderBoard() {
-    let leaderboard = document.getElementById('leaderboard');
-    if(leaderboard.style.display === 'none'){
-        leaderboard.style.display = 'block';
-    }
-    else{
-        leaderboard.style.display = 'none';
-    }
+function toggleAddEntry() {
+    $("#userScoreHeader").html("You made the leaderboard with a score of " + getScore());
+    $("#winnerToggle").click();
+}
+function toggleLeaderboard() {
+    $("#leaderboardButton").click();
 }
