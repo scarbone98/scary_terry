@@ -72,6 +72,8 @@ function addEntry(score) {
     firebaseRef.child(hash).child('score').set(score);
     firebaseRef.child(hash).child('negativeScore').set(-1 * score);
     initBoard();
-    toggleLeaderboard();
+    if(!leaderBoardOpen) {
+        toggleLeaderboard();
+    }
     toggleAddEntry();
 }

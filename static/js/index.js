@@ -5,8 +5,8 @@ let myGamePiece;
 let myObstacles = [];
 let myScore;
 let interval = 150;
-let adder = 0;
 let globalInterval;
+let intervalCleared = false;
 let screenWidth = window.innerWidth
     || document.documentElement.clientWidth
     || document.body.clientWidth;
@@ -17,7 +17,6 @@ let screenHeight = window.innerHeight
 
 
 function startGame() {
-
     myGamePiece = new component(30, 30, "red", 10, 120);
     myGamePiece.gravity = 0.05;
     myScore = new component("30px", "Consolas", "black", 280, 40, "text");
@@ -104,10 +103,12 @@ function updateGameArea() {
     for (let i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
             clearInterval(globalInterval);
+            intervalCleared = true;
             twitterCall();
             if(getScore() > scores[scores.length - 1] || scores.length < 15) {
                 toggleAddEntry();
-            }else{
+            }
+            else if (!leaderBoardOpen) {
                 toggleLeaderboard();
             }
             return;
@@ -145,6 +146,11 @@ function accelerate(n) {
 }
 function getScore() {
     return myGameArea.frameNo;
+}
+function restartGame() {
+    if(intervalCleared){
+       location.reload();
+    }
 }
 document.addEventListener('keydown', function (event) {
     let spaceBar = 32;
