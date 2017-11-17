@@ -128,6 +128,21 @@ function updateGameArea() {
         }
     }
     myGameArea.clear();
+    if(myGameArea.frameNo === 0){
+        let width = screenWidth/2;
+        while(width > 0){
+            x = myGameArea.canvas.width;
+            minHeight = 20;
+            maxHeight = 200;
+            height = Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
+            minGap = 80;
+            maxGap = 200;
+            gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
+            myObstacles.push(new component(10, height, "green", x - width, 0));
+            myObstacles.push(new component(10, x - height - gap, "green", x - width, height + gap));
+            width -= interval;
+        }
+    }
     myGameArea.frameNo += 1;
     if (myGameArea.frameNo === 1 || everyinterval(interval)) {
         x = myGameArea.canvas.width;
@@ -150,7 +165,7 @@ function updateGameArea() {
     if(isJumping) {
         myGamePiece.update("jump");
     }
-    else{
+    else {
         myGamePiece.update("idle");
     }
 }
@@ -175,13 +190,13 @@ document.addEventListener('keydown', function (event) {
     if (event.keyCode === spaceBar) {
         event.preventDefault();
         accelerate(-0.2);
+        isJumping = true;
     }
-    isJumping = true;
 });
 document.addEventListener('keyup', function (event) {
     let spaceBar = 32;
     if (event.keyCode === spaceBar) {
         accelerate(0.05);
+        isJumping = false;
     }
-    isJumping = false;
 });
