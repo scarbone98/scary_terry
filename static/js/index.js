@@ -22,10 +22,19 @@ let sprite_jump;
 function startGame() {
     myGamePiece = new component(47, 56, "red", 10, 120);
     myGamePiece.gravity = 0.05;
-    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+    // myScore = new component("30px", "Consolas", "black", 280, 40, "text");
     myGameArea.start();
     
 }
+function getRandomColor() {
+    let letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 
 let myGameArea = {
     canvas: document.createElement("canvas"),
@@ -44,6 +53,8 @@ let myGameArea = {
     },
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillStyle = 'rgba(0,0,0,0.8)';
+        this.context.fillRect(0,0,window.innerWidth,window.innerHeight);
     }
 };
 function component(width, height, color, x, y, type) {
@@ -144,8 +155,9 @@ function updateGameArea() {
             minGap = 80;
             maxGap = 200;
             gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-            myObstacles.push(new component(10, height, "green", x - width, 0));
-            myObstacles.push(new component(10, x - height - gap, "green", x - width, height + gap));
+            let color = getRandomColor();
+            myObstacles.push(new component(10, height, color, x - width, 0));
+            myObstacles.push(new component(10, x - height - gap, color, x - width, height + gap));
             width -= interval;
         }
     }
@@ -157,16 +169,19 @@ function updateGameArea() {
         minGap = 80;
         maxGap = 200;
         gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-        myObstacles.push(new component(10, height, "green", x + offsetDifference, 0));
-        myObstacles.push(new component(10, x - height - gap, "green", x + offsetDifference, height + gap));
+        let color = getRandomColor();
+        myObstacles.push(new component(10, height, color, x + offsetDifference, 0));
+        myObstacles.push(new component(10, x - height - gap, color, x + offsetDifference, height + gap));
     }
     myGameArea.frameNo += 1;
     for (let i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
         myObstacles[i].update();
     }
-    myScore.text = "SCORE: " + myGameArea.frameNo;
-    myScore.update();
+    document.getElementById("scoreBoard").innerHTML = "Score: " + getScore();
+    // myScore.text = "SCORE: " + myGameArea.frameNo;
+    // myScore.update();
+
     myGamePiece.newPos();
     if(isJumping) {
         myGamePiece.update("jump");
