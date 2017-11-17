@@ -15,7 +15,8 @@ let screenWidth = window.innerWidth
 let screenHeight = window.innerHeight
     || document.documentElement.clientHeight
     || document.body.clientHeight;
-
+let sprite_idle;
+let sprite_jump;
 
 function startGame() {
     myGamePiece = new component(47, 56, "red", 10, 120);
@@ -28,6 +29,10 @@ function startGame() {
 let myGameArea = {
     canvas: document.createElement("canvas"),
     start: function () {
+        sprite_idle = new Image();
+        sprite_idle.src = "../assets/sprites/jump1.png";
+        sprite_jump = new Image();
+        sprite_jump.src = "../assets/sprites/jump2.png";
         this.canvas.width = screenWidth / 1.00025;
         this.canvas.height = screenHeight / 1.10;
         this.context = this.canvas.getContext("2d");
@@ -40,7 +45,6 @@ let myGameArea = {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 };
-
 function component(width, height, color, x, y, type) {
     this.type = type;
     this.score = 0;
@@ -60,14 +64,10 @@ function component(width, height, color, x, y, type) {
             ctx.fillText(this.text, this.x, this.y);
         } else {
             if (image === "idle") {
-                let sprite = new Image();
-                sprite.src = "../assets/sprites/jump1.png";
-                ctx.drawImage(sprite, this.x, this.y, 47, 56);
+                ctx.drawImage(sprite_idle, this.x, this.y, 47, 56);
             }
             else if (image === "jump") {
-                let sprite = new Image();
-                sprite.src = "../assets/sprites/jump2.png";
-                ctx.drawImage(sprite, this.x, this.y, 45, 67);
+                ctx.drawImage(sprite_jump, this.x, this.y, 45, 67);
             }
             else {
                 ctx.fillStyle = color;
@@ -189,15 +189,15 @@ function restartGame() {
 document.addEventListener('keydown', function (event) {
     let spaceBar = 32;
     if (event.keyCode === spaceBar) {
+        isJumping = true;
         event.preventDefault();
         accelerate(-0.2);
-        isJumping = true;
     }
 });
 document.addEventListener('keyup', function (event) {
     let spaceBar = 32;
     if (event.keyCode === spaceBar) {
-        accelerate(0.05);
         isJumping = false;
+        accelerate(0.05);
     }
 });
