@@ -6,7 +6,6 @@ let myObstacles = [];
 let myScore;
 let interval = 150;
 let globalInterval;
-let offsetDifference = 0;
 let isJumping = false;
 let intervalCleared = false;
 let screenWidth = window.innerWidth
@@ -143,11 +142,7 @@ function updateGameArea() {
     myGameArea.clear();
     if(myGameArea.frameNo === 0){
         let width = screenWidth/2;
-        while(width > 0){
-            if(width < interval){
-                offsetDifference = interval - width;
-                width -= offsetDifference;
-            }
+        while(width - interval > 0){
             x = myGameArea.canvas.width;
             minHeight = 20;
             maxHeight = 200;
@@ -170,8 +165,8 @@ function updateGameArea() {
         maxGap = 200;
         gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
         let color = getRandomColor();
-        myObstacles.push(new component(10, height, color, x + offsetDifference, 0));
-        myObstacles.push(new component(10, x - height - gap, color, x + offsetDifference, height + gap));
+        myObstacles.push(new component(10, height, color, x, 0));
+        myObstacles.push(new component(10, x - height - gap, color, x, height + gap));
     }
     myGameArea.frameNo += 1;
     for (let i = 0; i < myObstacles.length; i += 1) {
