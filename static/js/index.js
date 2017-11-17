@@ -128,6 +128,7 @@ function updateGameArea() {
         }
     }
     myGameArea.clear();
+    myGameArea.frameNo += 1;
     if(myGameArea.frameNo === 0){
         let width = screenWidth/2;
         while(width > 0){
@@ -143,8 +144,7 @@ function updateGameArea() {
             width -= interval;
         }
     }
-    myGameArea.frameNo += 1;
-    if (myGameArea.frameNo === 1 || everyinterval(interval)) {
+    else if (myGameArea.frameNo === 1 || everyinterval(interval)) {
         x = myGameArea.canvas.width;
         minHeight = 20;
         maxHeight = 200;
