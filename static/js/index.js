@@ -128,7 +128,6 @@ function updateGameArea() {
         }
     }
     myGameArea.clear();
-    myGameArea.frameNo += 1;
     if(myGameArea.frameNo === 0){
         let width = screenWidth/2;
         while(width > 0){
@@ -155,6 +154,7 @@ function updateGameArea() {
         myObstacles.push(new component(10, height, "green", x, 0));
         myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
     }
+    myGameArea.frameNo += 1;
     for (let i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
         myObstacles[i].update();
