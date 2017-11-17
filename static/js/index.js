@@ -130,7 +130,7 @@ function updateGameArea() {
     myGameArea.clear();
     if(myGameArea.frameNo === 0){
         let width = screenWidth/2;
-        while(width > 0){
+        while(width - interval > 0){
             x = myGameArea.canvas.width;
             minHeight = 20;
             maxHeight = 200;
