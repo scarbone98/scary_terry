@@ -5,7 +5,7 @@ let myGamePiece;
 let myObstacles = [];
 let powerUps = [];
 let myScore;
-let interval = 150;
+let interval = 200;
 let globalInterval;
 let isJumping = false;
 let intervalCleared = false;
@@ -20,13 +20,16 @@ let sprite_idle;
 let sprite_jump;
 let background;
 let backgroundX;
+let coin;
+let powerUpsIndex = 0;
+let bonusScore = 0;
 function startGame() {
     backgroundX = 0;
     myGamePiece = new component(47, 56, "red", 10, 120);
     myGamePiece.gravity = 0.05;
     // myScore = new component("30px", "Consolas", "black", 280, 40, "text");
     myGameArea.start();
-    
+
 }
 function getRandomColor() {
     let letters = '0123456789ABCDEF';
@@ -36,7 +39,9 @@ function getRandomColor() {
     }
     return color;
 }
-
+function buffer() {
+    requestAnimationFrame(updateGameArea);
+}
 
 let myGameArea = {
     canvas: document.createElement("canvas"),
@@ -45,25 +50,27 @@ let myGameArea = {
         sprite_idle.src = "../assets/sprites/jump1.png";
         sprite_jump = new Image();
         sprite_jump.src = "../assets/sprites/jump2.png";
-        background = new Image;
+        background = new Image();
         background.src = "../assets/sprites/background.png";
+        coin = new Image();
+        coin.src = "../assets/sprites/spinning-coin.png";
         this.canvas.width = screenWidth / 1.00025;
         this.canvas.height = screenHeight / 1.10;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
-        this.interval = setInterval(updateGameArea, 15);
+        this.interval = setInterval(buffer, 15);
         globalInterval = this.interval;
     },
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // this.context.fillStyle = 'rgba(0,0,0,0.8)';
         // this.context.fillRect(0,0,window.innerWidth,window.innerHeight);
-        if(backgroundX > 1920){
+        if (backgroundX > 1920) {
             backgroundX = 0;
         }
-        for(let i = 0; i < myGameArea.canvas.width + 1920; i+=1920){
-            this.context.drawImage(background, i - backgroundX, 0, 1920,myGameArea.canvas.clientHeight);
+        for (let i = 0; i < myGameArea.canvas.width + 1920; i += 1920) {
+            this.context.drawImage(background, i - backgroundX, 0, 1920, myGameArea.canvas.clientHeight);
         }
         backgroundX++;
         // this.context.drawImage(background, 0, 0, 600,450);
@@ -80,6 +87,8 @@ function component(width, height, color, x, y, type) {
     this.y = y;
     this.gravity = 0;
     this.gravitySpeed = 0;
+    this.ticks = 0;
+    this.coinX = 0;
     this.update = function (image) {
         ctx = myGameArea.context;
         if (this.type === "text") {
@@ -92,6 +101,17 @@ function component(width, height, color, x, y, type) {
             }
             else if (image === "jump") {
                 ctx.drawImage(sprite_jump, this.x, this.y, 45, 67);
+            }
+            else if (image === "coin") {
+                if (this.coinX > 5) {
+                    this.coinX = 0;
+                }
+                ctx.drawImage(coin, (116.667 * this.coinX), 0, 116.667, 200, this.x, this.y, 30, 45);
+                if (this.ticks > 15) {
+                    this.coinX++;
+                    this.ticks = 0;
+                }
+                this.ticks++;
             }
             else {
                 ctx.fillStyle = color;
@@ -137,7 +157,7 @@ function component(width, height, color, x, y, type) {
 }
 
 function updateGameArea() {
-    var x, height, gap, minHeight, maxHeight, minGap, maxGap;
+    let x, height, gap, minHeight, maxHeight, minGap, maxGap;
     for (let i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
             clearInterval(globalInterval);
@@ -151,17 +171,15 @@ function updateGameArea() {
             }
             return;
         }
+        if (i < powerUps.length && i >= powerUpsIndex && myGamePiece.crashWith(powerUps[i])) {
+            powerUpsIndex++;
+            bonusScore += 250;
+        }
     }
-    // for(let i = 0; i < powerUps.length; i++){
-    //     if(myGamePiece.crashWith(powerUps[i])){
-    //         powerUps.splice(i, 1);
-    //         myGameArea.frameNo += 100;
-    //     }
-    // }
     myGameArea.clear();
-    if(myGameArea.frameNo === 0){
-        let width = screenWidth/2;
-        while(width - interval > 0){
+    if (myGameArea.frameNo === 0) {
+        let width = screenWidth / 2;
+        while (width - interval/3 > 0) {
             x = myGameArea.canvas.width;
             minHeight = 20;
             maxHeight = 200;
@@ -175,7 +193,7 @@ function updateGameArea() {
             width -= interval;
         }
     }
-    else if (myGameArea.frameNo === 1 || everyinterval(interval)) {
+    else if (everyinterval(interval)) {
         x = myGameArea.canvas.width;
         minHeight = 20;
         maxHeight = 200;
@@ -186,31 +204,36 @@ function updateGameArea() {
         let color = getRandomColor();
         myObstacles.push(new component(10, height, color, x, 0));
         myObstacles.push(new component(10, x - height - gap, color, x, height + gap));
-        // let powerUp = Math.random() * 100;
-        // if(powerUp >= 70){
-        //     let randomHeight = Math.random() * interval;
-        //     if(Math.random() * 2 > 1){
-        //         randomHeight *= -1;
-        //     }
-        //     powerUps.push(new component(20,20,color,x - 5 + interval/2, height + gap/2 - 10 + randomHeight));
-        // }
+        let powerUp = Math.random() * 100;
+        if (powerUp >= 60) {
+            let randomHeight = Math.random() * interval;
+            if (Math.random() * 2 > 1) {
+                randomHeight *= -1;
+            }
+            powerUps.push(new component(30, 45, color, x - 5 + interval / 2, height + gap / 2 - 10 + randomHeight));
+        }
 
     }
     myGameArea.frameNo += 1;
     for (let i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
         myObstacles[i].update();
+        if (i < powerUps.length && i >= powerUpsIndex) {
+            if(powerUps[i].x < 0){
+                powerUpsIndex++;
+            }
+            else {
+                powerUps[i].x += -1;
+                powerUps[i].update("coin");
+            }
+        }
     }
-    // for(let i = 0; i < powerUps.length; i++){
-    //     powerUps[i].x += -1;
-    //     powerUps[i].update();
-    // }
     document.getElementById("scoreBoard").innerHTML = "Score: " + getScore();
     // myScore.text = "SCORE: " + myGameArea.frameNo;
     // myScore.update();
 
     myGamePiece.newPos();
-    if(isJumping) {
+    if (isJumping) {
         myGamePiece.update("jump");
     }
     else {
@@ -226,7 +249,7 @@ function accelerate(n) {
     myGamePiece.gravity = n;
 }
 function getScore() {
-    return myGameArea.frameNo;
+    return myGameArea.frameNo + bonusScore;
 }
 function restartGame() {
     if (intervalCleared) {

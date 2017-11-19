@@ -25,6 +25,7 @@ app.post('/twitterCall', function (req, res) {
                 return res.status(400).send(error);
             } else {
                 let picker = Math.floor(Math.random() * 10);
+                if(tweets.statuses[picker] !== undefined)
                 return res.status(200).send(tweets.statuses[picker].text);
             }
         });
