@@ -3,6 +3,7 @@
  */
 let myGamePiece;
 let myObstacles = [];
+let powerUps = [];
 let myScore;
 let interval = 150;
 let globalInterval;
@@ -17,8 +18,10 @@ let screenHeight = window.innerHeight
     || document.body.clientHeight;
 let sprite_idle;
 let sprite_jump;
-
+let background;
+let backgroundX;
 function startGame() {
+    backgroundX = 0;
     myGamePiece = new component(47, 56, "red", 10, 120);
     myGamePiece.gravity = 0.05;
     // myScore = new component("30px", "Consolas", "black", 280, 40, "text");
@@ -42,6 +45,8 @@ let myGameArea = {
         sprite_idle.src = "../assets/sprites/jump1.png";
         sprite_jump = new Image();
         sprite_jump.src = "../assets/sprites/jump2.png";
+        background = new Image;
+        background.src = "../assets/sprites/background.png";
         this.canvas.width = screenWidth / 1.00025;
         this.canvas.height = screenHeight / 1.10;
         this.context = this.canvas.getContext("2d");
@@ -52,8 +57,16 @@ let myGameArea = {
     },
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.fillStyle = 'rgba(0,0,0,0.8)';
-        this.context.fillRect(0,0,window.innerWidth,window.innerHeight);
+        // this.context.fillStyle = 'rgba(0,0,0,0.8)';
+        // this.context.fillRect(0,0,window.innerWidth,window.innerHeight);
+        if(backgroundX > 1920){
+            backgroundX = 0;
+        }
+        for(let i = 0; i < myGameArea.canvas.width + 1920; i+=1920){
+            this.context.drawImage(background, i - backgroundX, 0, 1920,myGameArea.canvas.clientHeight);
+        }
+        backgroundX++;
+        // this.context.drawImage(background, 0, 0, 600,450);
     }
 };
 function component(width, height, color, x, y, type) {
@@ -139,6 +152,12 @@ function updateGameArea() {
             return;
         }
     }
+    // for(let i = 0; i < powerUps.length; i++){
+    //     if(myGamePiece.crashWith(powerUps[i])){
+    //         powerUps.splice(i, 1);
+    //         myGameArea.frameNo += 100;
+    //     }
+    // }
     myGameArea.clear();
     if(myGameArea.frameNo === 0){
         let width = screenWidth/2;
@@ -167,12 +186,25 @@ function updateGameArea() {
         let color = getRandomColor();
         myObstacles.push(new component(10, height, color, x, 0));
         myObstacles.push(new component(10, x - height - gap, color, x, height + gap));
+        // let powerUp = Math.random() * 100;
+        // if(powerUp >= 70){
+        //     let randomHeight = Math.random() * interval;
+        //     if(Math.random() * 2 > 1){
+        //         randomHeight *= -1;
+        //     }
+        //     powerUps.push(new component(20,20,color,x - 5 + interval/2, height + gap/2 - 10 + randomHeight));
+        // }
+
     }
     myGameArea.frameNo += 1;
     for (let i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
         myObstacles[i].update();
     }
+    // for(let i = 0; i < powerUps.length; i++){
+    //     powerUps[i].x += -1;
+    //     powerUps[i].update();
+    // }
     document.getElementById("scoreBoard").innerHTML = "Score: " + getScore();
     // myScore.text = "SCORE: " + myGameArea.frameNo;
     // myScore.update();
