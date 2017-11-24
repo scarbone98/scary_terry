@@ -4,7 +4,6 @@
 let myGamePiece;
 let myObstacles = [];
 let powerUps = [];
-let myScore;
 let interval = 200;
 let globalInterval;
 let isJumping = false;
@@ -23,11 +22,12 @@ let backgroundX;
 let coin;
 let powerUpsIndex = 0;
 let bonusScore = 0;
+let updateSpeed = 15;
+// let baseDifficulty = 2500;
 function startGame() {
     backgroundX = 0;
     myGamePiece = new component(47, 56, "red", 10, 120);
     myGamePiece.gravity = 0.05;
-    // myScore = new component("30px", "Consolas", "black", 280, 40, "text");
     myGameArea.start();
 
 }
@@ -39,10 +39,6 @@ function getRandomColor() {
     }
     return color;
 }
-function buffer() {
-    requestAnimationFrame(updateGameArea);
-}
-
 let myGameArea = {
     canvas: document.createElement("canvas"),
     start: function () {
@@ -59,13 +55,11 @@ let myGameArea = {
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
-        this.interval = setInterval(buffer, 15);
+        this.interval = setInterval(updateGameArea, updateSpeed);
         globalInterval = this.interval;
     },
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.context.fillStyle = 'rgba(0,0,0,0.8)';
-        // this.context.fillRect(0,0,window.innerWidth,window.innerHeight);
         if (backgroundX > 1920) {
             backgroundX = 0;
         }
@@ -73,7 +67,6 @@ let myGameArea = {
             this.context.drawImage(background, i - backgroundX, 0, 1920, myGameArea.canvas.clientHeight);
         }
         backgroundX++;
-        // this.context.drawImage(background, 0, 0, 600,450);
     }
 };
 function component(width, height, color, x, y, type) {
@@ -133,22 +126,22 @@ function component(width, height, color, x, y, type) {
         }
     };
     this.hitBottom = function () {
-        var rockbottom = myGameArea.canvas.height - this.height;
+        let rockbottom = myGameArea.canvas.height - this.height;
         if (this.y > rockbottom) {
             this.y = rockbottom;
             this.gravitySpeed = 0;
         }
     };
     this.crashWith = function (otherobj) {
-        var myleft = this.x;
-        var myright = this.x + (this.width);
-        var mytop = this.y;
-        var mybottom = this.y + (this.height);
-        var otherleft = otherobj.x;
-        var otherright = otherobj.x + (otherobj.width);
-        var othertop = otherobj.y;
-        var otherbottom = otherobj.y + (otherobj.height);
-        var crash = true;
+        let myleft = this.x;
+        let myright = this.x + (this.width);
+        let mytop = this.y;
+        let mybottom = this.y + (this.height);
+        let otherleft = otherobj.x;
+        let otherright = otherobj.x + (otherobj.width);
+        let othertop = otherobj.y;
+        let otherbottom = otherobj.y + (otherobj.height);
+        let crash = true;
         if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
             crash = false;
         }
@@ -158,6 +151,12 @@ function component(width, height, color, x, y, type) {
 
 function updateGameArea() {
     let x, height, gap, minHeight, maxHeight, minGap, maxGap;
+    // if(myGameArea.frameNo > baseDifficulty){
+    //     speedInterval -= 2;
+    //     clearInterval(myGameArea.interval);
+    //     myGameArea.interval = setInterval(updateGameArea,speedInterval);
+    //     baseDifficulty += 2500;
+    // }
     for (let i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
             clearInterval(globalInterval);
@@ -229,9 +228,6 @@ function updateGameArea() {
         }
     }
     document.getElementById("scoreBoard").innerHTML = "Score: " + getScore();
-    // myScore.text = "SCORE: " + myGameArea.frameNo;
-    // myScore.update();
-
     myGamePiece.newPos();
     if (isJumping) {
         myGamePiece.update("jump");
