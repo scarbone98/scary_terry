@@ -61,9 +61,9 @@ let myGameArea = {
             mouseY = e.clientY;
         });
         sprite_idle = new Image();
-        sprite_idle.src = "../assets/sprites/jump1.png";
+        sprite_idle.src = "../assets/sprites/oldmanterry2.png";
         sprite_jump = new Image();
-        sprite_jump.src = "../assets/sprites/jump2.png";
+        sprite_jump.src = "../assets/sprites/oldmanterry1.png";
         background = new Image();
         background.src = "../assets/sprites/background.png";
         coin = new Image();
@@ -109,10 +109,10 @@ function component(width, height, color, x, y, type) {
             ctx.fillText(this.text, this.x, this.y);
         } else {
             if (image === "idle") {
-                ctx.drawImage(sprite_idle, this.x, this.y, 47, 56);
+                ctx.drawImage(sprite_idle, this.x, this.y, 32, 32);
             }
             else if (image === "jump") {
-                ctx.drawImage(sprite_jump, this.x, this.y, 45, 67);
+                ctx.drawImage(sprite_jump, this.x, this.y, 32, 32);
             }
             else if (image === "coin") {
                 if (this.coinX > 5) {
@@ -199,28 +199,47 @@ function updateGameArea() {
         while (width - interval/3 > 0) {
             x = myGameArea.canvas.width;
             minHeight = 20;
-            maxHeight = 200;
-            height = Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
+            maxHeight = 20;
+            height = 60;
+                //Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
             minGap = 80;
             maxGap = 200;
             gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
             let color = getRandomColor();
-            myObstacles.push(new component(10, height, color, x - width, 0));
-            myObstacles.push(new component(10, x - height - gap, color, x - width, height + gap));
+            let xspot = Math.random() * screenWidth;
+            let yspot = screenHeight;
+            let obs = new component(60, height, color, xspot, yspot);
+            myObstacles.push(obs);
+            //myObstacles.push(new component(20, x - height - gap, color, x - width, height + gap));
             width -= interval;
         }
     }
     else if (everyinterval(interval)) {
         x = myGameArea.canvas.width;
         minHeight = 20;
-        maxHeight = 200;
-        height = Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
+        maxHeight = 20;
+        height = 60;
+            //Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
         minGap = 80;
         maxGap = 200;
         gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
         let color = getRandomColor();
-        myObstacles.push(new component(10, height, color, x, 0));
-        myObstacles.push(new component(10, x - height - gap, color, x, height + gap));
+        let xspot = Math.random() * screenWidth;
+        let yspot = screenHeight;
+        let obs = new component(60, height, color, xspot, yspot);
+        /*
+        for (i = 0; i < myObstacles.length; i++) {
+            if (obs.crashWith(myObstacles[i])) {
+                break;
+            }
+            myObstacles.push(obs);
+        }
+        if (myObstacles.length === 0) {
+            myObstacles.push(obs);
+        }
+        */
+        myObstacles.push(obs);
+        //myObstacles.push(new component(20, x - height - gap, color, x, height + gap));
         let powerUp = Math.random() * 100;
         if (powerUp >= 60) {
             let randomHeight = Math.random() * interval;
@@ -232,8 +251,8 @@ function updateGameArea() {
 
     }
     myGameArea.frameNo += 1;
-    for (let i = 0; i < myObstacles.length; i += 1) {
-        myObstacles[i].x += -1;
+    for (let i = 0; i < myObstacles.length; i++) {
+        myObstacles[i].y += -1;
         myObstacles[i].update();
         if (i < powerUps.length && i >= powerUpsIndex) {
             if(powerUps[i].x < 0){
