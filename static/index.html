@@ -5,7 +5,7 @@
     <script src="js/APIcalls.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
     <script>
-        var config = {
+        let config = {
             apiKey: "AIzaSyDU4o6ytPtTOPEcA0x1ZKMY_Rj_7ntPi-c",
             authDomain: "ooidash-c189f.firebaseapp.com",
             databaseURL: "https://ooidash-c189f.firebaseio.com",
@@ -28,12 +28,18 @@
             border: 1px solid #d3d3d3;
             background-color: #f1f1f1;
         }
+        body {
+            background: #22c1c3;  /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #fdbb2d, #22c1c3);  /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, #fdbb2d, #22c1c3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+            overflow: hidden;
+        }
     </style>
     <title>Ooidash</title>
 </head>
 
 
-<body onload="startGame()" style="background-color: #2b669a;">
+<body onload="startGame()" style="background-color: #2b669a;" onresize="resizeCanvas()">
 <div class="container">
     <div class="modal fade" id="myModal" role="dialog">
         <div class="modal-dialog">

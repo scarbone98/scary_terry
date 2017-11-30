@@ -24,6 +24,18 @@ let powerUpsIndex = 0;
 let bonusScore = 0;
 let updateSpeed = 15;
 // let baseDifficulty = 2500;
+function resizeCanvas() {
+    let canvas = document.getElementById("mycanvas");
+    if (canvas.width  < window.innerWidth)
+    {
+        canvas.width  = window.innerWidth;
+    }
+
+    if (canvas.height < window.innerHeight)
+    {
+        canvas.height = window.innerHeight / 1.10;
+    }
+}
 function startGame() {
     backgroundX = 0;
     myGamePiece = new component(47, 56, "red", 10, 120);
@@ -50,7 +62,8 @@ let myGameArea = {
         background.src = "../assets/sprites/background.png";
         coin = new Image();
         coin.src = "../assets/sprites/spinning-coin.png";
-        this.canvas.width = screenWidth / 1.00025;
+        this.canvas.setAttribute("id","mycanvas");
+        this.canvas.width = window.innerWidth;
         this.canvas.height = screenHeight / 1.10;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
