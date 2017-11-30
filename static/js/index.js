@@ -23,6 +23,8 @@ let coin;
 let powerUpsIndex = 0;
 let bonusScore = 0;
 let updateSpeed = 15;
+let mouseX;
+let mouseY;
 // let baseDifficulty = 2500;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
@@ -54,6 +56,10 @@ function getRandomColor() {
 let myGameArea = {
     canvas: document.createElement("canvas"),
     start: function () {
+        this.canvas.addEventListener('mousemove', function (e) {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
         sprite_idle = new Image();
         sprite_idle.src = "../assets/sprites/jump1.png";
         sprite_jump = new Image();
@@ -126,9 +132,8 @@ function component(width, height, color, x, y, type) {
         }
     };
     this.newPos = function () {
-        this.gravitySpeed += this.gravity;
-        this.x += this.speedX;
-        this.y += this.speedY + this.gravitySpeed;
+        this.x = mouseX;
+        this.y = mouseY;
         this.hitBottom();
         this.hitTop();
     };
@@ -253,10 +258,6 @@ function updateGameArea() {
 function everyinterval(n) {
     return (myGameArea.frameNo / n) % 1 === 0;
 }
-
-function accelerate(n) {
-    myGamePiece.gravity = n;
-}
 function getScore() {
     return myGameArea.frameNo + bonusScore;
 }
@@ -265,18 +266,3 @@ function restartGame() {
         location.reload();
     }
 }
-document.addEventListener('keydown', function (event) {
-    let spaceBar = 32;
-    if (event.keyCode === spaceBar) {
-        isJumping = true;
-        event.preventDefault();
-        accelerate(-0.2);
-    }
-});
-document.addEventListener('keyup', function (event) {
-    let spaceBar = 32;
-    if (event.keyCode === spaceBar) {
-        isJumping = false;
-        accelerate(0.05);
-    }
-});
