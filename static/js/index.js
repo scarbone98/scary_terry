@@ -1,5 +1,6 @@
 /**
  * Created by scarbone on 11/11/17.
+ * Contributed to by slondon too, okay?
  */
 let myGamePiece;
 let myObstacles = [];
@@ -25,6 +26,7 @@ let bonusScore = 0;
 let updateSpeed = 15;
 let mouseX;
 let mouseY;
+let fallAnim = -1;
 // let baseDifficulty = 2500;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
@@ -40,7 +42,7 @@ function resizeCanvas() {
 }
 function startGame() {
     backgroundX = 0;
-    myGamePiece = new component(47, 56, "red", 10, 120);
+    myGamePiece = new component(32, 32, "red", 10, 120);
     myGamePiece.gravity = 0.05;
     myGameArea.start();
 
@@ -102,6 +104,7 @@ function component(width, height, color, x, y, type) {
     this.ticks = 0;
     this.coinX = 0;
     this.update = function (image) {
+        this.ticks++;
         ctx = myGameArea.context;
         if (this.type === "text") {
             ctx.font = this.width + " " + this.height;
@@ -109,10 +112,14 @@ function component(width, height, color, x, y, type) {
             ctx.fillText(this.text, this.x, this.y);
         } else {
             if (image === "idle") {
-                ctx.drawImage(sprite_idle, this.x, this.y, 32, 32);
-            }
-            else if (image === "jump") {
-                ctx.drawImage(sprite_jump, this.x, this.y, 32, 32);
+                if (this.ticks >= 30) {
+                    this.ticks = 0;
+                }
+                if (this.ticks >= 15) {
+                    ctx.drawImage(sprite_jump, this.x, this.y, 32, 32);
+                } else if (this.ticks < 15) {
+                    ctx.drawImage(sprite_idle, this.x, this.y, 32, 32);
+                }
             }
             else if (image === "coin") {
                 if (this.coinX > 5) {
@@ -252,7 +259,7 @@ function updateGameArea() {
     }
     myGameArea.frameNo += 1;
     for (let i = 0; i < myObstacles.length; i++) {
-        myObstacles[i].y += -1;
+        myObstacles[i].y += -5;
         myObstacles[i].update();
         if (i < powerUps.length && i >= powerUpsIndex) {
             if(powerUps[i].x < 0){
@@ -266,12 +273,7 @@ function updateGameArea() {
     }
     document.getElementById("scoreBoard").innerHTML = "Score: " + getScore();
     myGamePiece.newPos();
-    if (isJumping) {
-        myGamePiece.update("jump");
-    }
-    else {
-        myGamePiece.update("idle");
-    }
+    myGamePiece.update("idle");
 }
 
 function everyinterval(n) {
