@@ -42,7 +42,7 @@ function resizeCanvas() {
 }
 function startGame() {
     backgroundX = 0;
-    myGamePiece = new component(32, 32, "red", 10, 120);
+    myGamePiece = new component(64, 64, "red", 10, 120);
     myGamePiece.gravity = 0.05;
     myGameArea.start();
 
@@ -116,9 +116,9 @@ function component(width, height, color, x, y, type) {
                     this.ticks = 0;
                 }
                 if (this.ticks >= 15) {
-                    ctx.drawImage(sprite_jump, this.x, this.y, 32, 32);
+                    ctx.drawImage(sprite_jump, this.x, this.y, 64, 64);
                 } else if (this.ticks < 15) {
-                    ctx.drawImage(sprite_idle, this.x, this.y, 32, 32);
+                    ctx.drawImage(sprite_idle, this.x, this.y, 64, 64);
                 }
             }
             else if (image === "coin") {
