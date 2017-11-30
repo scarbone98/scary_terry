@@ -221,7 +221,7 @@ function updateGameArea() {
             width -= interval;
         }
     }
-    else if (everyinterval(interval)) {
+    else {
         x = myGameArea.canvas.width;
         minHeight = 20;
         maxHeight = 20;
