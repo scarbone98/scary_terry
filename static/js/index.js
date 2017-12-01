@@ -7,7 +7,6 @@ let myObstacles = [];
 let powerUps = [];
 let interval = 200;
 let globalInterval;
-let isJumping = false;
 let intervalCleared = false;
 let screenWidth = window.innerWidth
     || document.documentElement.clientWidth
@@ -27,8 +26,6 @@ let updateSpeed = 15;
 let mouseX;
 let mouseY;
 let difficulty = 10;
-let fallAnim = -1;
-// let baseDifficulty = 2500;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
     if (canvas.width  < window.innerWidth)
@@ -43,8 +40,7 @@ function resizeCanvas() {
 }
 function startGame() {
     backgroundX = 0;
-    myGamePiece = new component(64, 64, "red", 10, 120);
-    myGamePiece.gravity = 0.05;
+    myGamePiece = new component(64, 64, "red", 120, 10);
     myGameArea.start();
 
 }
@@ -96,17 +92,13 @@ function component(width, height, color, x, y, type) {
     this.score = 0;
     this.width = width;
     this.height = height;
-    this.speedX = 0;
-    this.speedY = 0;
     this.x = x;
     this.y = y;
-    this.gravity = 0;
-    this.gravitySpeed = 0;
     this.ticks = 0;
     this.coinX = 0;
     this.update = function (image) {
         this.ticks++;
-        ctx = myGameArea.context;
+        let ctx = myGameArea.context;
         if (this.type === "text") {
             ctx.font = this.width + " " + this.height;
             ctx.fillStyle = color;
@@ -177,28 +169,24 @@ function component(width, height, color, x, y, type) {
 
 function updateGameArea() {
     let x, height, gap, minHeight, maxHeight, minGap, maxGap;
-    // if(myGameArea.frameNo > baseDifficulty){
-    //     speedInterval -= 2;
-    //     clearInterval(myGameArea.interval);
-    //     myGameArea.interval = setInterval(updateGameArea,speedInterval);
-    //     baseDifficulty += 2500;
-    // }
-    for (let i = 0; i < myObstacles.length; i += 1) {
-        if (myGamePiece.crashWith(myObstacles[i])) {
-            clearInterval(globalInterval);
-            intervalCleared = true;
-            twitterCall();
-            if (getScore() > scores[scores.length - 1] || scores.length < 15) {
-                toggleAddEntry();
+    if(myGameArea.frameNo > 50) {
+        for (let i = 0; i < myObstacles.length; i += 1) {
+            if (myGamePiece.crashWith(myObstacles[i])) {
+                clearInterval(globalInterval);
+                intervalCleared = true;
+                twitterCall();
+                if (getScore() > scores[scores.length - 1] || scores.length < 15) {
+                    toggleAddEntry();
+                }
+                else if (!leaderBoardOpen) {
+                    toggleLeaderboard();
+                }
+                return;
             }
-            else if (!leaderBoardOpen) {
-                toggleLeaderboard();
+            if (i < powerUps.length && i >= powerUpsIndex && myGamePiece.crashWith(powerUps[i])) {
+                powerUpsIndex++;
+                bonusScore += 250;
             }
-            return;
-        }
-        if (i < powerUps.length && i >= powerUpsIndex && myGamePiece.crashWith(powerUps[i])) {
-            powerUpsIndex++;
-            bonusScore += 250;
         }
     }
     myGameArea.clear();
@@ -228,14 +216,13 @@ function updateGameArea() {
         }
     }
     else if (everyinterval(difficulty)) {
-        x = myGameArea.canvas.width;
-        minHeight = 64;
-        maxHeight = 16;
-        height = Math.floor(Math.random() * maxHeight) + minHeight;
-        width = Math.floor(Math.random() * maxHeight) + minHeight;
-        minGap = 80;
-        maxGap = 200;
-        gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
+        let minHeight = 64;
+        let maxHeight = 16;
+        let height = Math.floor(Math.random() * maxHeight) + minHeight;
+        let width = Math.floor(Math.random() * maxHeight) + minHeight;
+        let minGap = 80;
+        let maxGap = 200;
+        // gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
         let color = getRandomColor();
         let xspot = Math.random() * screenWidth;
         let yspot = screenHeight;
