@@ -26,6 +26,7 @@ let bonusScore = 0;
 let updateSpeed = 15;
 let mouseX;
 let mouseY;
+let difficulty = 10;
 let fallAnim = -1;
 // let baseDifficulty = 2500;
 function resizeCanvas() {
@@ -201,13 +202,18 @@ function updateGameArea() {
         }
     }
     myGameArea.clear();
+    if (getScore() % 500 === 0) {
+        if (difficulty > 3) {
+            difficulty--;
+        }
+    }
     if (myGameArea.frameNo === 0) {
         let width = screenWidth / 2;
         while (width - interval/3 > 0) {
             x = myGameArea.canvas.width;
             minHeight = 20;
             maxHeight = 20;
-            height = 60;
+            height = 64;
                 //Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
             minGap = 80;
             maxGap = 200;
@@ -215,25 +221,25 @@ function updateGameArea() {
             let color = getRandomColor();
             let xspot = Math.random() * screenWidth;
             let yspot = screenHeight;
-            let obs = new component(60, height, color, xspot, yspot);
+            let obs = new component(64, height, color, xspot, yspot);
             myObstacles.push(obs);
             //myObstacles.push(new component(20, x - height - gap, color, x - width, height + gap));
             width -= interval;
         }
     }
-    else {
+    else if (everyinterval(difficulty)) {
         x = myGameArea.canvas.width;
-        minHeight = 20;
-        maxHeight = 20;
-        height = 60;
-            //Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
+        minHeight = 64;
+        maxHeight = 16;
+        height = Math.floor(Math.random() * maxHeight) + minHeight;
+        width = Math.floor(Math.random() * maxHeight) + minHeight;
         minGap = 80;
         maxGap = 200;
         gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
         let color = getRandomColor();
         let xspot = Math.random() * screenWidth;
         let yspot = screenHeight;
-        let obs = new component(60, height, color, xspot, yspot);
+        let obs = new component(width, height, color, xspot, yspot);
         /*
         for (i = 0; i < myObstacles.length; i++) {
             if (obs.crashWith(myObstacles[i])) {
@@ -253,7 +259,7 @@ function updateGameArea() {
             if (Math.random() * 2 > 1) {
                 randomHeight *= -1;
             }
-            powerUps.push(new component(30, 45, color, x - 5 + interval / 2, height + gap / 2 - 10 + randomHeight));
+            powerUps.push(new component(30, 45, color, xspot + Math.random() * 10, yspot));
         }
 
     }
@@ -266,7 +272,7 @@ function updateGameArea() {
                 powerUpsIndex++;
             }
             else {
-                powerUps[i].x += -1;
+                powerUps[i].y += -3;
                 powerUps[i].update("coin");
             }
         }
