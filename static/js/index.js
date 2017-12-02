@@ -37,7 +37,7 @@ function resizeCanvas() {
 }
 function startGame() {
     backgroundX = 0;
-    myGamePiece = new component(28 * 2, 20 * 2, "red", 10, 120);
+    myGamePiece = new component((28 * 2) - 6, (20 * 2) - 1, "red", 10, 120);
     myGameArea.start();
 
 }
@@ -108,9 +108,9 @@ function component(width, height, color, x, y, type) {
                     this.ticks = 0;
                 }
                 if (this.ticks >= 15) {
-                    ctx.drawImage(sprite_jump, this.x, this.y, 28 * 2, 20 * 2);
+                    ctx.drawImage(sprite_jump, this.x + 3, this.y, 28 * 2, 20 * 2);
                 } else if (this.ticks < 15) {
-                    ctx.drawImage(sprite_idle, this.x, this.y, 28 * 2, 20 * 2);
+                    ctx.drawImage(sprite_idle, this.x + 3, this.y, 28 * 2, 20 * 2);
                 }
             }
             else if (image === "coin") {
@@ -210,7 +210,7 @@ function updateGameArea() {
             width -= interval;
         }
     }
-    else if (everyinterval(difficulty)) {
+    else if ((myGameArea.frameNo % difficulty) === 0) {
         let color = getRandomColor();
         let xspot = Math.random() * screenWidth;
         let yspot = screenHeight;
@@ -221,20 +221,28 @@ function updateGameArea() {
             powerUps.push(new component(30, 45, color, xspot, yspot));
         }
     }
-    myGameArea.frameNo += 1;
     if(scoreflag === true){
-        score++;
-        scoreflag = false;
+        if ((myGameArea.frameNo % 30) === 0) {
+            score++;
+            scoreflag = false;
+        }
     }else{
         scoreflag = true;
     }
+    myGameArea.frameNo += 1;
     for (let i = 0; i < myObstacles.length; i++) {
-        myObstacles[i].y += -5;
+        myObstacles[i].y -= 5;
         myObstacles[i].update("ooid");
+        if (myObstacles[i].y < -64) {
+            myObstacles.splice(i,1);
+        }
     }
     for (let i = 0; i < powerUps.length; i++) {
-        powerUps[i].y += -3;
+        powerUps[i].y -= 3;
         powerUps[i].update("coin");
+        if (powerUps[i].y < 0) {
+            powerUps.splice(i,1);
+        }
     }
     document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore() ;
     //document.getElementById("scoreBoard").innerHTML = "Coins: " + getScore() ;
