@@ -17,6 +17,7 @@ let screenHeight = window.innerHeight
     || document.body.clientHeight;
 let sprite_idle;
 let sprite_jump;
+let sprite_ooid;
 let background;
 let backgroundX;
 let coin;
@@ -42,6 +43,8 @@ function resizeCanvas() {
 }
 function startGame() {
     backgroundX = 0;
+    myGamePiece = new component(28 * 2, 20 * 2, "red", 10, 120);
+    myGamePiece.gravity = 0.05;
     myGamePiece = new component(64, 64, "red", 120, 10);
     myGameArea.start();
 
@@ -65,6 +68,8 @@ let myGameArea = {
         sprite_idle.src = "../assets/sprites/oldmanterry2.png";
         sprite_jump = new Image();
         sprite_jump.src = "../assets/sprites/oldmanterry1.png";
+        sprite_ooid = new Image();
+        sprite_ooid.src = "../assets/sprites/ooid.png";
         background = new Image();
         background.src = "../assets/sprites/background.png";
         coin = new Image();
@@ -111,9 +116,9 @@ function component(width, height, color, x, y, type) {
                     this.ticks = 0;
                 }
                 if (this.ticks >= 15) {
-                    ctx.drawImage(sprite_jump, this.x, this.y, 64, 64);
+                    ctx.drawImage(sprite_jump, this.x, this.y, 28 * 2, 20 * 2);
                 } else if (this.ticks < 15) {
-                    ctx.drawImage(sprite_idle, this.x, this.y, 64, 64);
+                    ctx.drawImage(sprite_idle, this.x, this.y, 28 * 2, 20 * 2);
                 }
             }
             else if (image === "coin") {
@@ -127,7 +132,9 @@ function component(width, height, color, x, y, type) {
                 }
                 this.ticks++;
             }
-            else {
+            else if (image === "ooid") {
+                ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
+            } else {
                 ctx.fillStyle = color;
                 ctx.fillRect(this.x, this.y, this.width, this.height);
             }
@@ -203,45 +210,18 @@ function updateGameArea() {
             x = myGameArea.canvas.width;
             minHeight = 20;
             maxHeight = 20;
-            height = 64;
-                //Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
             minGap = 80;
             maxGap = 200;
             gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-            let color = getRandomColor();
-            let xspot = Math.random() * screenWidth;
-            let yspot = screenHeight;
-            let obs = new component(64, height, color, xspot, yspot);
-            myObstacles.push(obs);
-            //myObstacles.push(new component(20, x - height - gap, color, x - width, height + gap));
             width -= interval;
         }
     }
     else if (everyinterval(difficulty)) {
-        let minHeight = 64;
-        let maxHeight = 16;
-        let height = Math.floor(Math.random() * maxHeight) + minHeight;
-        let width = Math.floor(Math.random() * maxHeight) + minHeight;
-        let minGap = 80;
-        let maxGap = 200;
-        // gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
         let color = getRandomColor();
         let xspot = Math.random() * screenWidth;
         let yspot = screenHeight;
-        let obs = new component(width, height, color, xspot, yspot);
-        /*
-        for (i = 0; i < myObstacles.length; i++) {
-            if (obs.crashWith(myObstacles[i])) {
-                break;
-            }
-            myObstacles.push(obs);
-        }
-        if (myObstacles.length === 0) {
-            myObstacles.push(obs);
-        }
-        */
+        let obs = new component(64, 64, color, xspot, yspot);
         myObstacles.push(obs);
-        //myObstacles.push(new component(20, x - height - gap, color, x, height + gap));
         let powerUp = Math.random() * 100;
         if (powerUp >= 60) {
             let randomHeight = Math.random() * interval;
@@ -261,7 +241,7 @@ function updateGameArea() {
     }
     for (let i = 0; i < myObstacles.length; i++) {
         myObstacles[i].y += -5;
-        myObstacles[i].update();
+        myObstacles[i].update("ooid");
         if (i < powerUps.length && i >= powerUpsIndex) {
             if(powerUps[i].x < 0){
                 powerUpsIndex++;
