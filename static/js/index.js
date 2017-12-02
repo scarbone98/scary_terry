@@ -26,6 +26,8 @@ let updateSpeed = 15;
 let mouseX;
 let mouseY;
 let difficulty = 10;
+let score = 0;
+let scoreflag = true; //when true the score counts;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
     if (canvas.width  < window.innerWidth)
@@ -185,7 +187,7 @@ function updateGameArea() {
             }
             if (i < powerUps.length && i >= powerUpsIndex && myGamePiece.crashWith(powerUps[i])) {
                 powerUpsIndex++;
-                bonusScore += 250;
+                bonusScore += 25;
             }
         }
     }
@@ -251,6 +253,12 @@ function updateGameArea() {
 
     }
     myGameArea.frameNo += 1;
+    if(scoreflag === true){
+        score++;
+        scoreflag = false;
+    }else{
+        scoreflag = true;
+    }
     for (let i = 0; i < myObstacles.length; i++) {
         myObstacles[i].y += -5;
         myObstacles[i].update();
@@ -264,7 +272,8 @@ function updateGameArea() {
             }
         }
     }
-    document.getElementById("scoreBoard").innerHTML = "Score: " + getScore();
+    document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore() ;
+    //document.getElementById("scoreBoard").innerHTML = "Coins: " + getScore() ;
     myGamePiece.newPos();
     myGamePiece.update("idle");
 }
@@ -273,7 +282,8 @@ function everyinterval(n) {
     return (myGameArea.frameNo / n) % 1 === 0;
 }
 function getScore() {
-    return myGameArea.frameNo + bonusScore;
+    //let score = myGameArea.frameNo /2;
+    return score + bonusScore;
 }
 function restartGame() {
     if (intervalCleared) {
