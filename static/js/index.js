@@ -8,20 +8,14 @@ let powerUps = [];
 let interval = 200;
 let globalInterval;
 let intervalCleared = false;
-let screenWidth = window.innerWidth
-    || document.documentElement.clientWidth
-    || document.body.clientWidth;
-
-let screenHeight = window.innerHeight
-    || document.documentElement.clientHeight
-    || document.body.clientHeight;
+let screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+let screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 let sprite_idle;
 let sprite_jump;
 let sprite_ooid;
 let background;
 let backgroundX;
 let coin;
-let powerUpsIndex = 0;
 let bonusScore = 0;
 let updateSpeed = 15;
 let mouseX;
@@ -44,8 +38,6 @@ function resizeCanvas() {
 function startGame() {
     backgroundX = 0;
     myGamePiece = new component(28 * 2, 20 * 2, "red", 10, 120);
-    myGamePiece.gravity = 0.05;
-    myGamePiece = new component(64, 64, "red", 120, 10);
     myGameArea.start();
 
 }
@@ -192,9 +184,11 @@ function updateGameArea() {
                 }
                 return;
             }
-            if (i < powerUps.length && i >= powerUpsIndex && myGamePiece.crashWith(powerUps[i])) {
-                powerUpsIndex++;
+        }
+        for (let i = 0; i < powerUps.length; i++) {
+            if (myGamePiece.crashWith(powerUps[i])) {
                 bonusScore += 25;
+                powerUps.splice(i,1);
             }
         }
     }
@@ -224,13 +218,8 @@ function updateGameArea() {
         myObstacles.push(obs);
         let powerUp = Math.random() * 100;
         if (powerUp >= 60) {
-            let randomHeight = Math.random() * interval;
-            if (Math.random() * 2 > 1) {
-                randomHeight *= -1;
-            }
-            powerUps.push(new component(30, 45, color, xspot + Math.random() * 10, yspot));
+            powerUps.push(new component(30, 45, color, xspot, yspot));
         }
-
     }
     myGameArea.frameNo += 1;
     if(scoreflag === true){
@@ -242,15 +231,10 @@ function updateGameArea() {
     for (let i = 0; i < myObstacles.length; i++) {
         myObstacles[i].y += -5;
         myObstacles[i].update("ooid");
-        if (i < powerUps.length && i >= powerUpsIndex) {
-            if(powerUps[i].x < 0){
-                powerUpsIndex++;
-            }
-            else {
-                powerUps[i].y += -3;
-                powerUps[i].update("coin");
-            }
-        }
+    }
+    for (let i = 0; i < powerUps.length; i++) {
+        powerUps[i].y += -3;
+        powerUps[i].update("coin");
     }
     document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore() ;
     //document.getElementById("scoreBoard").innerHTML = "Coins: " + getScore() ;
