@@ -2,5 +2,4 @@
 npm-debug.log
 .DS_Store
 /*.env
-.idea/workspace.xml___jb_tmp___
-.idea/workspace.xml
+/.idea/
