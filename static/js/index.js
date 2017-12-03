@@ -20,8 +20,9 @@ let bonusScore = 0;
 let updateSpeed = 15;
 let mouseX;
 let mouseY;
-let difficulty = 10;
+let difficulty = 1;
 let score = 0;
+let diffscore = 0;
 let scoreflag = true; //when true the score counts;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
@@ -192,16 +193,12 @@ function updateGameArea() {
         for (let i = 0; i < powerUps.length; i++) {
             if (myGamePiece.crashWith(powerUps[i])) {
                 bonusScore += 25;
+                diffscore += 25;
                 powerUps.splice(i,1);
             }
         }
     }
     myGameArea.clear();
-    if (getScore() % 500 === 0) {
-        if (difficulty > 3) {
-            difficulty--;
-        }
-    }
     if (myGameArea.frameNo === 0) {
         let width = screenWidth / 2;
         while (width - interval/3 > 0) {
@@ -214,20 +211,23 @@ function updateGameArea() {
             width -= interval;
         }
     }
-    else if ((myGameArea.frameNo % difficulty) === 0) {
-        let color = getRandomColor();
-        let xspot = Math.random() * screenWidth;
-        let yspot = screenHeight;
-        let obs = new component(64, 64, color, xspot, yspot);
-        myObstacles.push(obs);
-        let powerUp = Math.random() * 100;
-        if (powerUp >= 60) {
-            powerUps.push(new component(30, 45, color, xspot, yspot));
+    if ((myGameArea.frameNo % 30) === 0) {
+        for (let i = 0; i < difficulty; i++) {
+            let color = getRandomColor();
+            let xspot = Math.random() * (screenWidth - 64);
+            let yspot = screenHeight;
+            let obs = new component(64, 64, color, xspot, yspot);
+            myObstacles.push(obs);
+            let powerUp = Math.random() * 100;
+            if (powerUp >= 60) {
+                powerUps.push(new component(30, 45, color, xspot, yspot));
+            }
         }
     }
     if(scoreflag === true){
         if ((myGameArea.frameNo % 30) === 0) {
             score++;
+            diffscore++;
             scoreflag = false;
         }
     }else{
@@ -247,6 +247,10 @@ function updateGameArea() {
         if (powerUps[i].y < -64) {
             powerUps.splice(i,1);
         }
+    }
+    if (diffscore >= 500) {
+        diffscore = 0;
+        difficulty++;
     }
     document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore() ;
     myGamePiece.newPos();
