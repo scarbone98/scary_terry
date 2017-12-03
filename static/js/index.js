@@ -14,7 +14,7 @@ let sprite_idle;
 let sprite_jump;
 let sprite_ooid;
 let background;
-let backgroundX;
+let backgroundY;
 let coin;
 let bonusScore = 0;
 let updateSpeed = 15;
@@ -36,7 +36,7 @@ function resizeCanvas() {
     }
 }
 function startGame() {
-    backgroundX = 0;
+    backgroundY = 0;
     myGamePiece = new component((28 * 2) - 6, (20 * 2) - 1, "red", 10, 120);
     myGameArea.start();
 
@@ -63,7 +63,7 @@ let myGameArea = {
         sprite_ooid = new Image();
         sprite_ooid.src = "../assets/sprites/ooid.png";
         background = new Image();
-        background.src = "../assets/sprites/background.png";
+        background.src = "../assets/sprites/test_stars.png";
         coin = new Image();
         coin.src = "../assets/sprites/spinning-coin.png";
         this.canvas.setAttribute("id","mycanvas");
@@ -77,13 +77,14 @@ let myGameArea = {
     },
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        if (backgroundX > 1920) {
-            backgroundX = 0;
+        let height = 450;
+        if (backgroundY > height) {
+            backgroundY = 0;
         }
-        for (let i = 0; i < myGameArea.canvas.width + 1920; i += 1920) {
-            this.context.drawImage(background, i - backgroundX, 0, 1920, myGameArea.canvas.clientHeight);
+        for (let i = 0; i < myGameArea.canvas.height + height; i += height) {
+            this.context.drawImage(background, 0, i - backgroundY, 1920, myGameArea.canvas.height);
         }
-        backgroundX++;
+        backgroundY+=2;
     }
 };
 function component(width, height, color, x, y, type) {
@@ -169,7 +170,7 @@ function component(width, height, color, x, y, type) {
 }
 
 function updateGameArea() {
-    let x, height, gap, minHeight, maxHeight, minGap, maxGap;
+    let x, gap, minHeight, maxHeight, minGap, maxGap;
     if(myGameArea.frameNo > 50) {
         for (let i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
@@ -233,7 +234,7 @@ function updateGameArea() {
     for (let i = 0; i < myObstacles.length; i++) {
         myObstacles[i].y -= 5;
         myObstacles[i].update("ooid");
-        if (myObstacles[i].y < -64) {
+        if (myObstacles[i].y < -128) {
             myObstacles.splice(i,1);
         }
     }
@@ -245,13 +246,8 @@ function updateGameArea() {
         }
     }
     document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore() ;
-    //document.getElementById("scoreBoard").innerHTML = "Coins: " + getScore() ;
     myGamePiece.newPos();
     myGamePiece.update("idle");
-}
-
-function everyinterval(n) {
-    return (myGameArea.frameNo / n) % 1 === 0;
 }
 function getScore() {
     //let score = myGameArea.frameNo /2;
