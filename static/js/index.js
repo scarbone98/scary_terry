@@ -78,11 +78,14 @@ let myGameArea = {
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         let height = 450;
+        let width = 800;
         if (backgroundY > height) {
             backgroundY = 0;
         }
-        for (let i = 0; i < myGameArea.canvas.height + height; i += height) {
-            this.context.drawImage(background, 0, i - backgroundY, 1920, myGameArea.canvas.height);
+        for(let j = 0; j < myGameArea.canvas.width + width; j += width) {
+            for (let i = 0; i < myGameArea.canvas.height + height; i += height) {
+                this.context.drawImage(background, 0, i - backgroundY, j, myGameArea.canvas.height);
+            }
         }
         backgroundY+=2;
     }
@@ -241,7 +244,7 @@ function updateGameArea() {
     for (let i = 0; i < powerUps.length; i++) {
         powerUps[i].y -= 3;
         powerUps[i].update("coin");
-        if (powerUps[i].y < 0) {
+        if (powerUps[i].y < -64) {
             powerUps.splice(i,1);
         }
     }
