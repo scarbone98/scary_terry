@@ -5,6 +5,7 @@
 let myGamePiece;
 let myObstacles = [];
 let powerUps = [];
+let stars = [];
 let interval = 200;
 let globalInterval;
 let intervalCleared = false;
@@ -13,6 +14,9 @@ let screenHeight = window.innerHeight || document.documentElement.clientHeight |
 let sprite_idle;
 let sprite_jump;
 let sprite_ooid;
+let sprite_star1;
+let sprite_star2;
+let sprite_star3;
 let background;
 let backgroundY;
 let coin;
@@ -55,6 +59,7 @@ let myGameArea = {
             mouseX = e.clientX;
             mouseY = e.clientY;
         });
+        //set sprites
         sprite_idle = new Image();
         sprite_idle.src = "../assets/sprites/oldmanterry2.png";
         sprite_jump = new Image();
@@ -62,9 +67,16 @@ let myGameArea = {
         sprite_ooid = new Image();
         sprite_ooid.src = "../assets/sprites/3829rock.png";
         background = new Image();
-        background.src = "../assets/sprites/test_stars.png";
+        background.src = "../assets/sprites/background.png";
         coin = new Image();
         coin.src = "../assets/sprites/6416diamond.png";
+        sprite_star1 = new Image();
+        sprite_star1.src = "../assets/sprites/star1.png";
+        sprite_star2 = new Image();
+        sprite_star2.src = "../assets/sprites/star2.png";
+        sprite_star3 = new Image();
+        sprite_star3.src = "../assets/sprites/star3.png";
+        //set canvas
         this.canvas.setAttribute("id", "mycanvas");
         this.canvas.width = window.innerWidth;
         this.canvas.height = screenHeight / 1.10;
@@ -86,7 +98,7 @@ let myGameArea = {
                 this.context.drawImage(background, 0, i - backgroundY, j - 100, myGameArea.canvas.height);
             }
         }
-        backgroundY += 2;
+        backgroundY += 0.75;
     }
 };
 function component(width, height, color, x, y, type) {
@@ -98,6 +110,7 @@ function component(width, height, color, x, y, type) {
     this.y = y;
     this.ticks = 0;
     this.coinX = 0;
+    this.starX = 0;
     this.update = function (image) {
         this.ticks++;
         let ctx = myGameArea.context;
@@ -124,7 +137,27 @@ function component(width, height, color, x, y, type) {
         }
         else if (image === "ooid") {
             ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
-        } else {
+        }
+        else if (image === "star") {
+            if (this.starX > 3) {
+                this.starX = 0;
+            }
+            if (this.type === 1) {
+                ctx.drawImage(sprite_star1, (16 * this.starX), 0, 16, 16, this.x, this.y, 32, 32);
+            }
+            if (this.type === 2) {
+                ctx.drawImage(sprite_star2, (16 * this.starX),0,16,16,this.x,this.y,32,32);
+            }
+            if (this.type === 3) {
+                ctx.drawImage(sprite_star3, (16 * this.starX),0,16,16,this.x,this.y,32,32);
+            }
+            if (this.ticks > 15) {
+                this.starX++;
+                this.ticks = 0;
+            }
+            this.ticks++;
+        }
+        else {
             ctx.fillStyle = color;
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
@@ -167,6 +200,8 @@ function component(width, height, color, x, y, type) {
 
 function updateGameArea() {
     let x, gap, minHeight, maxHeight, minGap, maxGap;
+
+    //Check for collisions
     if (myGameArea.frameNo > 50) {
         for (let i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
@@ -191,6 +226,8 @@ function updateGameArea() {
         }
     }
     myGameArea.clear();
+
+    //Generate objects
     if (myGameArea.frameNo === 0) {
         let width = screenWidth / 2;
         while (width - interval / 3 > 0) {
@@ -216,6 +253,23 @@ function updateGameArea() {
             }
         }
     }
+    if ((myGameArea.frameNo % 60) === 0) {
+        let starType = Math.random() * 150;
+        let color = getRandomColor();
+        let xspot = Math.random() * (screenWidth - 64);
+        let yspot = screenHeight;
+        if (starType <= 50) {
+            stars.push(new component(16,16, color,xspot,yspot,1))
+        }
+        else if (starType <= 80) {
+            stars.push(new component(16,16, color, xspot,yspot, 2));
+        }
+        else if (starType <= 150) {
+            stars.push(new component(16,16, color, xspot,yspot, 3));
+        }
+    }
+
+    //Update Score
     if (scoreflag === true) {
         if ((myGameArea.frameNo % 30) === 0) {
             score++;
@@ -225,7 +279,22 @@ function updateGameArea() {
     } else {
         scoreflag = true;
     }
+
+    //Update Everything
     myGameArea.frameNo += 1;
+    for (let i = 0; i < stars.length; i++) {
+        if (stars[i].type === 3) {
+            stars[i].y -= 1;
+        }
+        else if (stars[i].type === 2) {
+            stars[i].y += 0.5;
+        }
+        stars[i].y -= 1;
+        stars[i].update("star");
+        if (stars[i].y < -10) {
+            stars.splice(i,1);
+        }
+    }
     for (let i = 0; i < myObstacles.length; i++) {
         myObstacles[i].y -= 5;
         myObstacles[i].update("ooid");
