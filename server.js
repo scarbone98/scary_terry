@@ -2,6 +2,7 @@
  * Created by scarbone on 11/11/17.
  */
 'use strict';
+let path = require('path');
 let Twitter = require('twitter');
 let express = require('express');
 let bodyParser = require('body-parser');
@@ -13,10 +14,12 @@ let client = new Twitter({
     access_token_secret: "mAsG2VB4vNPabpN6X8yuA0D3UL3xgnnt3lt1I3pg5uf5V"
 });
 app.use(bodyParser.json());
-app.use('/', express.static('static'));
+app.use("/css", express.static(__dirname + '/static/css'));
+app.use("/js", express.static(__dirname + '/static/js'));
+app.use("/assets", express.static(__dirname + '/static/assets'));
 
 app.get('/', function (req, res) {
-
+    return res.sendFile(__dirname + "/static/index.html");
 });
 app.post('/twitterCall', function (req, res) {
     client.get("https://api.twitter.com/1.1/search/tweets.json?q=geology&count=10",

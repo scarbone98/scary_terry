@@ -26,13 +26,11 @@ let diffscore = 0;
 let scoreflag = true; //when true the score counts;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
-    if (canvas.width  < window.innerWidth)
-    {
-        canvas.width  = window.innerWidth;
+    if (canvas.width < window.innerWidth) {
+        canvas.width = window.innerWidth;
     }
 
-    if (canvas.height < window.innerHeight)
-    {
+    if (canvas.height < window.innerHeight) {
         canvas.height = window.innerHeight / 1.10;
     }
 }
@@ -67,7 +65,7 @@ let myGameArea = {
         background.src = "../assets/sprites/test_stars.png";
         coin = new Image();
         coin.src = "../assets/sprites/6416diamond.png";
-        this.canvas.setAttribute("id","mycanvas");
+        this.canvas.setAttribute("id", "mycanvas");
         this.canvas.width = window.innerWidth;
         this.canvas.height = screenHeight / 1.10;
         this.context = this.canvas.getContext("2d");
@@ -83,12 +81,12 @@ let myGameArea = {
         if (backgroundY > height) {
             backgroundY = 0;
         }
-        for(let j = 0; j < myGameArea.canvas.width + width; j += width) {
+        for (let j = 0; j < myGameArea.canvas.width + width; j += width) {
             for (let i = 0; i < myGameArea.canvas.height + height; i += height) {
-                this.context.drawImage(background, 0, i - backgroundY, j, myGameArea.canvas.height);
+                this.context.drawImage(background, 0, i - backgroundY, j - 100, myGameArea.canvas.height);
             }
         }
-        backgroundY+=2;
+        backgroundY += 2;
     }
 };
 function component(width, height, color, x, y, type) {
@@ -103,38 +101,32 @@ function component(width, height, color, x, y, type) {
     this.update = function (image) {
         this.ticks++;
         let ctx = myGameArea.context;
-        if (this.type === "text") {
-            ctx.font = this.width + " " + this.height;
-            ctx.fillStyle = color;
-            ctx.fillText(this.text, this.x, this.y);
+        if (image === "idle") {
+            if (this.ticks >= 30) {
+                this.ticks = 0;
+            }
+            if (this.ticks >= 15) {
+                ctx.drawImage(sprite_jump, this.x + 3, this.y, 28 * 2, 20 * 2);
+            } else if (this.ticks < 15) {
+                ctx.drawImage(sprite_idle, this.x + 3, this.y, 28 * 2, 20 * 2);
+            }
+        }
+        else if (image === "coin") {
+            if (this.coinX > 3) {
+                this.coinX = 0;
+            }
+            ctx.drawImage(coin, (16 * this.coinX), 0, 16, 16, this.x, this.y, 32, 32);
+            if (this.ticks > 15) {
+                this.coinX++;
+                this.ticks = 0;
+            }
+            this.ticks++;
+        }
+        else if (image === "ooid") {
+            ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
         } else {
-            if (image === "idle") {
-                if (this.ticks >= 30) {
-                    this.ticks = 0;
-                }
-                if (this.ticks >= 15) {
-                    ctx.drawImage(sprite_jump, this.x + 3, this.y, 28 * 2, 20 * 2);
-                } else if (this.ticks < 15) {
-                    ctx.drawImage(sprite_idle, this.x + 3, this.y, 28 * 2, 20 * 2);
-                }
-            }
-            else if (image === "coin") {
-                if (this.coinX > 3) {
-                    this.coinX = 0;
-                }
-                ctx.drawImage(coin, (16 * this.coinX), 0, 16, 16, this.x, this.y, 32, 32);
-                if (this.ticks > 15) {
-                    this.coinX++;
-                    this.ticks = 0;
-                }
-                this.ticks++;
-            }
-            else if (image === "ooid") {
-                ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
-            } else {
-                ctx.fillStyle = color;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
-            }
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
         }
     };
     this.newPos = function () {
@@ -175,7 +167,7 @@ function component(width, height, color, x, y, type) {
 
 function updateGameArea() {
     let x, gap, minHeight, maxHeight, minGap, maxGap;
-    if(myGameArea.frameNo > 50) {
+    if (myGameArea.frameNo > 50) {
         for (let i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
                 clearInterval(globalInterval);
@@ -194,14 +186,14 @@ function updateGameArea() {
             if (myGamePiece.crashWith(powerUps[i])) {
                 bonusScore += 25;
                 diffscore += 25;
-                powerUps.splice(i,1);
+                powerUps.splice(i, 1);
             }
         }
     }
     myGameArea.clear();
     if (myGameArea.frameNo === 0) {
         let width = screenWidth / 2;
-        while (width - interval/3 > 0) {
+        while (width - interval / 3 > 0) {
             x = myGameArea.canvas.width;
             minHeight = 20;
             maxHeight = 20;
@@ -224,13 +216,13 @@ function updateGameArea() {
             }
         }
     }
-    if(scoreflag === true){
+    if (scoreflag === true) {
         if ((myGameArea.frameNo % 30) === 0) {
             score++;
             diffscore++;
             scoreflag = false;
         }
-    }else{
+    } else {
         scoreflag = true;
     }
     myGameArea.frameNo += 1;
@@ -238,26 +230,25 @@ function updateGameArea() {
         myObstacles[i].y -= 5;
         myObstacles[i].update("ooid");
         if (myObstacles[i].y < -128) {
-            myObstacles.splice(i,1);
+            myObstacles.splice(i, 1);
         }
     }
     for (let i = 0; i < powerUps.length; i++) {
         powerUps[i].y -= 3;
         powerUps[i].update("coin");
-        if (powerUps[i].y < -64) {
-            powerUps.splice(i,1);
+        if (powerUps[i].y < -128) {
+            powerUps.splice(i, 1);
         }
     }
     if (diffscore >= 500) {
         diffscore = 0;
         difficulty++;
     }
-    document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore() ;
+    document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore();
     myGamePiece.newPos();
     myGamePiece.update("idle");
 }
 function getScore() {
-    //let score = myGameArea.frameNo /2;
     return score + bonusScore;
 }
 function restartGame() {
