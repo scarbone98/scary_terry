@@ -61,11 +61,11 @@ let myGameArea = {
         sprite_jump = new Image();
         sprite_jump.src = "../assets/sprites/oldmanterry1.png";
         sprite_ooid = new Image();
-        sprite_ooid.src = "../assets/sprites/ooid.png";
+        sprite_ooid.src = "../assets/sprites/3829rock.png";
         background = new Image();
         background.src = "../assets/sprites/test_stars.png";
         coin = new Image();
-        coin.src = "../assets/sprites/spinning-coin.png";
+        coin.src = "../assets/sprites/6416diamond.png";
         this.canvas.setAttribute("id","mycanvas");
         this.canvas.width = window.innerWidth;
         this.canvas.height = screenHeight / 1.10;
@@ -115,10 +115,10 @@ function component(width, height, color, x, y, type) {
                 }
             }
             else if (image === "coin") {
-                if (this.coinX > 5) {
+                if (this.coinX > 3) {
                     this.coinX = 0;
                 }
-                ctx.drawImage(coin, (116.667 * this.coinX), 0, 116.667, 200, this.x, this.y, 30, 45);
+                ctx.drawImage(coin, (16 * this.coinX), 0, 16, 16, this.x, this.y, 32, 32);
                 if (this.ticks > 15) {
                     this.coinX++;
                     this.ticks = 0;
