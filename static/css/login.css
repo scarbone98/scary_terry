@@ -4,10 +4,10 @@
 /*
  * General styles
  */
-body, html {
-    height: 100%;
-    background-color: #000000;
-}
+/*body, html {*/
+    /*height: 100%;*/
+    /*background-color: #000000;*/
+/*}*/
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */

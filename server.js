@@ -19,7 +19,7 @@ app.use("/js", express.static(__dirname + '/static/js'));
 app.use("/assets", express.static(__dirname + '/static/assets'));
 
 app.get('/', function (req, res) {
-    return res.sendFile(__dirname + "/static/index.html");
+    return res.sendFile(__dirname + "/static/login.html");
 });
 app.post('/twitterCall', function (req, res) {
     client.get("https://api.twitter.com/1.1/search/tweets.json?q=spacex&count=10",

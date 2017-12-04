@@ -192,18 +192,28 @@ function component(width, height, color, x, y, type) {
         this.y = mouseY;
         this.hitBottom();
         this.hitTop();
+        this.hitRight();
+        this.hitLeft();
+    };
+    this.hitRight = function () {
+      if(this.x > screenWidth - this.width){
+          this.x = screenWidth - this.width;
+      }
+    };
+    this.hitLeft = function () {
+      if(this.x < 0){
+          this.x = this.width;
+      }
     };
     this.hitTop = function () {
         if (this.y < 0) {
             this.y = 0;
-            this.gravitySpeed = 0;
         }
     };
     this.hitBottom = function () {
         let rockbottom = myGameArea.canvas.height - this.height;
         if (this.y > rockbottom) {
             this.y = rockbottom;
-            this.gravitySpeed = 0;
         }
     };
     this.crashWith = function (otherobj) {
@@ -225,7 +235,6 @@ function component(width, height, color, x, y, type) {
 
 function updateGameArea() {
     let x, gap, minHeight, maxHeight, minGap, maxGap;
-
     //Check for collisions
     if (myGameArea.frameNo > 50) {
         for (let i = 0; i < myObstacles.length; i += 1) {
@@ -354,7 +363,7 @@ function updateGameArea() {
         }
         difficulty++;
     }
-    document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore();
+    // document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore();
     myGamePiece.newPos();
     myGamePiece.update("idle");
 }

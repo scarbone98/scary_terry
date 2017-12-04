@@ -1,4 +1,15 @@
+let canvas;
+let backgroundY = 0;
+let background;
 function initApp() {
+    background = new Image();
+    background.src = "../assets/sprites/background.png";
+    canvas = document.createElement("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.context = canvas.getContext("2d");
+    document.body.insertBefore(canvas, document.body.childNodes[0]);
+    setInterval(update, 30);
     // firebase.auth().onAuthStateChanged(function(user) {
     //     if (user) {
     //         // User is signed in.
@@ -40,9 +51,9 @@ function logIn() {
     let email = document.getElementById("inputEmail").value;
     let password = document.getElementById("inputPassword").value;
     firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
-        if(user) {
+        if (user) {
             window.location.href = "/index";
-        } else{
+        } else {
             errorMessage.html("Wrong username or password.");
         }
     }).catch((error) => {
@@ -59,4 +70,18 @@ function createAccount() {
     }).catch((error) => {
         errorMessage.html(error.message);
     });
+}
+function update() {
+    canvas.context.clearRect(0, 0, canvas.width, canvas.height);
+    let height = 450;
+    let width = 800;
+    if (backgroundY > height) {
+        backgroundY = 0;
+    }
+    for (let j = 0; j < canvas.width + width; j += width) {
+        for (let i = 0; i < canvas.height + height; i += height) {
+            canvas.context.drawImage(background, 0, i - backgroundY, j - 100, canvas.height);
+        }
+    }
+    backgroundY += 0.75;
 }

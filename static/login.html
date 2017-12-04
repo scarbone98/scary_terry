@@ -5,6 +5,21 @@
 <script src="js/login.js"></script>
 <link href="css/login.css" rel="stylesheet" media="all">
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Monoton"/>
+<style>
+    body{
+        overflow: hidden;
+    }
+    canvas {
+        z-index: -1;
+        position: absolute;
+        background-color: #f1f1f1;
+        -webkit-transform: translateZ(0);
+        -moz-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        -o-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+</style>
 <script type="text/javascript">
     let config = {
         apiKey: "AIzaSyDU4o6ytPtTOPEcA0x1ZKMY_Rj_7ntPi-c",
@@ -32,7 +47,8 @@
             <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
             <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
             <button class="btn btn-lg btn-primary btn-block btn-signin" type="button" onclick="logIn()">Sign in</button>
-            <button class="btn btn-lg btn-primary btn-block btn-signin" type="button" onclick="createAccount()">Create</button>
+            <button class="btn btn-lg btn-primary btn-block btn-signin" type="button" onclick="createAccount()">Create
+            </button>
             <h5 id="errorMessage" style="color: red; position: absolute; left: calc(50% - 175px); margin: 5px"></h5>
         </form><!-- /form -->
     </div><!-- /card-container -->
