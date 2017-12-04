@@ -270,7 +270,7 @@ function updateGameArea() {
             let color = getRandomColor();
             let xspot = Math.random() * (screenWidth - 64);
             let yspot = screenHeight;
-            let obs = new component(64, 64, color, xspot, yspot);
+            let obs = new component(60, 60, color, xspot, yspot);
             myObstacles.push(obs);
             let powerUp = Math.random() * 100;
             if (powerUp >= 60) {
