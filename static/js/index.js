@@ -330,14 +330,14 @@ function updateGameArea() {
     for (let i = 0; i < myObstacles.length; i++) {
         myObstacles[i].y -= 5;
         myObstacles[i].update("ooid");
-        if (myObstacles[i].y < -128) {
+        if (myObstacles[i].y < -256) {
             myObstacles.splice(i, 1);
         }
     }
     for (let i = 0; i < powerUps.length; i++) {
         powerUps[i].y -= 3;
         powerUps[i].update("coin");
-        if (powerUps[i].y < -128) {
+        if (powerUps[i].y < -256) {
             powerUps.splice(i, 1);
         }
     }
