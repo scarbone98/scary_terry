@@ -22,6 +22,7 @@ let sprite_earth;
 let sprite_moon;
 let sprite_comet;
 let sprite_mars;
+let sprite_meteor;
 let background;
 let backgroundY;
 let coin;
@@ -91,6 +92,8 @@ let myGameArea = {
         sprite_comet.src = "../assets/sprites/comet.png";
         sprite_mars = new Image();
         sprite_mars.src = "../assets/sprites/mars.png";
+        sprite_meteor = new Image();
+        sprite_meteor.src = "../assets/sprites/meteor.png";
         //set canvas
         this.canvas.setAttribute("id", "mycanvas");
         this.canvas.width = window.innerWidth;
@@ -151,7 +154,18 @@ function component(width, height, color, x, y, type) {
             this.ticks++;
         }
         else if (image === "ooid") {
-            ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
+            if (this.type === 1) {
+                ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
+            }
+            else if (this.type === 2) {
+                ctx.drawImage(sprite_comet, this.x - 15, this.y - 2, 64, 64);
+            }
+            else if (this.type === 3) {
+                ctx.drawImage(sprite_meteor, this.x -15, this.y, 64 * 2, 64 * 2);
+            }
+            else {
+                ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
+            }
         }
         else if (image === "star") {
             if (this.starX > 3) {
@@ -177,13 +191,13 @@ function component(width, height, color, x, y, type) {
                 this.starX = 0;
             }
             if (this.type === 1) {
-                ctx.drawImage(sprite_earth, (64 * this.starX), 0, 64, 64, this.x, this.y, 128, 128);
+                ctx.drawImage(sprite_earth, (64 * this.starX), 0, 64, 64, this.x, this.y, 64 * 3, 64 * 3);
             }
             if (this.type === 2) {
-                ctx.drawImage(sprite_moon, (64 * this.starX), 0, 64, 64, this.x, this.y, 64, 64);
+                ctx.drawImage(sprite_moon, (64 * this.starX), 0, 64, 64, this.x, this.y, 32 * 3, 32 * 3);
             }
             if (this.type === 3) {
-                ctx.drawImage(sprite_mars, (64 * this.starX), 0, 64, 64, this.x, this.y, 128, 128);
+                ctx.drawImage(sprite_mars, (64 * this.starX), 0, 64, 64, this.x, this.y, 64 * 3, 64 * 3);
             }
             if (this.ticks > 15) {
                 this.starX++;
@@ -278,8 +292,24 @@ function updateGameArea() {
         for (let i = 0; i < difficulty; i++) {
             let color = getRandomColor();
             let xspot = Math.random() * (screenWidth - 64);
-            let yspot = screenHeight;
-            let obs = new component(60, 60, color, xspot, yspot);
+            let offset = Math.random() * 15;
+            let yspot = screenHeight + offset;
+            let rockType;
+            if (difflevel > 2) {
+                rockType = (Math.random() * 100);
+            } else {
+                rockType = (Math.random() * 75);
+            }
+            let obs;
+            if (rockType <= 50) {
+                obs = new component(50, 50, color, xspot, yspot, 1);
+            }
+            else if (rockType <= 75) {
+                obs = new component(30, 30, color, xspot, yspot, 2);
+            }
+            else if (rockType <= 100) {
+                obs = new component(100, 120, color, xspot, yspot, 3);
+            }
             myObstacles.push(obs);
             let powerUp = Math.random() * 100;
             if (powerUp >= 60) {
@@ -337,7 +367,13 @@ function updateGameArea() {
         }
     }
     for (let i = 0; i < myObstacles.length; i++) {
-        myObstacles[i].y -= 5;
+        if (myObstacles[i].type === 1) {
+            myObstacles[i].y -= 5;
+        } else if (myObstacles[i].type === 2) {
+            myObstacles[i].y -= 6;
+        } else if (myObstacles[i].type === 3) {
+            myObstacles[i].y -= 4;
+        }
         myObstacles[i].update("ooid");
         if (myObstacles[i].y < -256) {
             myObstacles.splice(i, 1);
@@ -363,7 +399,7 @@ function updateGameArea() {
         }
         difficulty++;
     }
-    document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore();
+    //document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore();
     myGamePiece.newPos();
     myGamePiece.update("idle");
 }
