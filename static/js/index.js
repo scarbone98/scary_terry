@@ -23,7 +23,9 @@ let sprite_moon;
 let sprite_comet;
 let sprite_mars;
 let sprite_jupiter;
+let sprite_ppower;
 let sprite_meteor;
+let sprite_shield;
 let background;
 let backgroundY;
 let coin;
@@ -31,6 +33,8 @@ let bonusScore = 0;
 let updateSpeed = 15;
 let mouseX;
 let mouseY;
+let invincibility = false;
+let ptimer = 0;
 let difficulty = 1;
 let score = 0;
 let diffscore = 0;
@@ -97,6 +101,10 @@ let myGameArea = {
         sprite_meteor.src = "../assets/sprites/meteor.png";
         sprite_jupiter = new Image();
         sprite_jupiter.src = "../assets/sprites/jupiter.png";
+        sprite_ppower = new Image();
+        sprite_ppower.src = "../assets/sprites/invinc.png";
+        sprite_shield = new Image();
+        sprite_shield.src = "../assets/sprites/shield.png";
         //set canvas
         this.canvas.setAttribute("id", "mycanvas");
         this.canvas.width = window.innerWidth;
@@ -144,12 +152,20 @@ function component(width, height, color, x, y, type) {
             } else if (this.ticks < 15) {
                 ctx.drawImage(sprite_idle, this.x + 3, this.y, 28 * 2, 20 * 2);
             }
+            if (invincibility === true) {
+                ctx.drawImage(sprite_shield, this.x - 16, this.y - 24, 32*3, 32*3);
+            }
         }
         else if (image === "coin") {
             if (this.coinX > 3) {
                 this.coinX = 0;
             }
-            ctx.drawImage(coin, (16 * this.coinX), 0, 16, 16, this.x, this.y, 32, 32);
+            if (this.type === 1) {
+                ctx.drawImage(coin, (16 * this.coinX), 0, 16, 16, this.x, this.y, 32, 32);
+            }
+            else if (this.type === 2) {
+                ctx.drawImage(sprite_ppower, (32 * this.coinX), 0, 32, 32, this.x, this.y, 32, 32);
+            }
             if (this.ticks > 15) {
                 this.coinX++;
                 this.ticks = 0;
@@ -267,28 +283,45 @@ function updateGameArea() {
     //Check for collisions
     if (myGameArea.frameNo > 50) {
         for (let i = 0; i < myObstacles.length; i += 1) {
-            if (myGamePiece.crashWith(myObstacles[i])) {
-                clearInterval(globalInterval);
-                intervalCleared = true;
-                twitterCall();
-                if (getScore() > scores[scores.length - 1] || scores.length < 15) {
-                    toggleAddEntry();
+            if (invincibility === false) {
+                if (myGamePiece.crashWith(myObstacles[i])) {
+                    clearInterval(globalInterval);
+                    intervalCleared = true;
+                    twitterCall();
+                    if (getScore() > scores[scores.length - 1] || scores.length < 15) {
+                        toggleAddEntry();
+                    }
+                    else if (!leaderBoardOpen) {
+                        toggleLeaderboard();
+                    }
+                    return;
                 }
-                else if (!leaderBoardOpen) {
-                    toggleLeaderboard();
-                }
-                return;
             }
         }
         for (let i = 0; i < powerUps.length; i++) {
             if (myGamePiece.crashWith(powerUps[i])) {
-                bonusScore += 25;
-                diffscore += 25;
-                powerUps.splice(i, 1);
+                if (powerUps[i].type === 1) {
+                    bonusScore += 25;
+                    diffscore += 25;
+                    powerUps.splice(i, 1);
+                }
+                else if (powerUps[i].type === 2) {
+                    invincibility = true;
+                    powerUps.splice(i,1);
+                }
             }
         }
     }
     myGameArea.clear();
+
+    if (invincibility === true && (myGameArea.frameNo % 60) === 0 ) {
+        ptimer++;
+    }
+    if (invincibility === true && ptimer >= 10) {
+        invincibility = false;
+        ptimer = 0;
+    }
+
 
     //Generate objects
     if (myGameArea.frameNo === 0) {
@@ -328,7 +361,10 @@ function updateGameArea() {
             myObstacles.push(obs);
             let powerUp = Math.random() * 100;
             if (powerUp >= 60) {
-                powerUps.push(new component(30, 45, color, xspot, yspot));
+                powerUps.push(new component(30, 45, color, xspot, yspot, 1));
+            }
+            else if (powerUp >= 55) {
+                powerUps.push(new component(32,32, color, xspot, yspot, 2));
             }
         }
     }
