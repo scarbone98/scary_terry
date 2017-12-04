@@ -6,13 +6,14 @@
 <link href="css/login.css" rel="stylesheet" media="all">
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Monoton"/>
 <style>
-    body{
+    html, body, div, canvas {
+        margin: 0;
+        padding: 0;
         overflow: hidden;
     }
     canvas {
         z-index: -1;
         position: absolute;
-        background-color: #f1f1f1;
         -webkit-transform: translateZ(0);
         -moz-transform: translateZ(0);
         -ms-transform: translateZ(0);
@@ -36,6 +37,9 @@
     let ui = new firebaseui.auth.AuthUI(firebase.auth());
     ui.start('#form-login', uiConfig);
 </script>
+<head>
+    <title>Ooidash</title>
+</head>
 <body onload="initApp()" style="transform: translateZ(0);">
 <div class="logo noselect"><b>O<span>oi</span>d<span>a</span>sh</b></div>
 <div class="container">
