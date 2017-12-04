@@ -20,6 +20,8 @@ let sprite_star2;
 let sprite_star3;
 let sprite_earth;
 let sprite_moon;
+let sprite_comet;
+let sprite_mars;
 let background;
 let backgroundY;
 let coin;
@@ -31,7 +33,7 @@ let difficulty = 1;
 let score = 0;
 let diffscore = 0;
 let difflevel = 1;
-let maxlevel = 2;
+let maxlevel = 3;
 let scoreflag = true; //when true the score counts;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
@@ -85,6 +87,10 @@ let myGameArea = {
         sprite_earth.src = "../assets/sprites/earth.png";
         sprite_moon = new Image();
         sprite_moon.src = "../assets/sprites/moon.png";
+        sprite_comet = new Image();
+        sprite_comet.src = "../assets/sprites/comet.png";
+        sprite_mars = new Image();
+        sprite_mars.src = "../assets/sprites/mars.png";
         //set canvas
         this.canvas.setAttribute("id", "mycanvas");
         this.canvas.width = window.innerWidth;
@@ -175,6 +181,9 @@ function component(width, height, color, x, y, type) {
             }
             if (this.type === 2) {
                 ctx.drawImage(sprite_moon, (64 * this.starX), 0, 64, 64, this.x, this.y, 64, 64);
+            }
+            if (this.type === 3) {
+                ctx.drawImage(sprite_mars, (64 * this.starX), 0, 64, 64, this.x, this.y, 128, 128);
             }
             if (this.ticks > 15) {
                 this.starX++;
