@@ -1,6 +1,16 @@
 let canvas;
 let backgroundY = 0;
 let background;
+function resizeCanvas() {
+    let canvas = document.getElementById("mycanvas");
+    if (canvas.width < window.innerWidth) {
+        canvas.width = window.innerWidth;
+    }
+
+    if (canvas.height < window.innerHeight) {
+        canvas.height = window.innerHeight / 1.10;
+    }
+}
 function initApp() {
     background = new Image();
     background.src = "../assets/sprites/background.png";
@@ -8,6 +18,7 @@ function initApp() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     canvas.context = canvas.getContext("2d");
+    canvas.setAttribute("id", "mycanvas");
     document.body.insertBefore(canvas, document.body.childNodes[0]);
     setInterval(update, 30);
     // firebase.auth().onAuthStateChanged(function(user) {

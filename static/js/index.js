@@ -426,14 +426,14 @@ function updateGameArea() {
             myObstacles[i].y -= 4;
         }
         myObstacles[i].update("ooid");
-        if (myObstacles[i].y < -256) {
+        if (myObstacles[i].y < -512) {
             myObstacles.splice(i, 1);
         }
     }
     for (let i = 0; i < powerUps.length; i++) {
         powerUps[i].y -= 3;
         powerUps[i].update("coin");
-        if (powerUps[i].y < -256) {
+        if (powerUps[i].y < -512) {
             powerUps.splice(i, 1);
         }
     }

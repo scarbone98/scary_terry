@@ -40,8 +40,8 @@
 <head>
     <title>Ooidash</title>
 </head>
-<body onload="initApp()" style="transform: translateZ(0);">
-<div class="logo noselect"><b>O<span>oi</span>d<span>a</span>sh</b></div>
+<body onload="initApp()" style="transform: translateZ(0);" onresize="resizeCanvas()">
+<div class="logo noselect" style="padding: 10px"><b>O<span>oi</span>d<span>a</span>sh</b></div>
 <div class="container">
     <div class="card card-container">
         <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"/>
@@ -50,8 +50,8 @@
             <span id="reauth-email" class="reauth-email"></span>
             <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
             <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-            <button class="btn btn-lg btn-primary btn-block btn-signin" type="button" onclick="logIn()">Sign in</button>
-            <button class="btn btn-lg btn-primary btn-block btn-signin" type="button" onclick="createAccount()">Create
+            <button class="btn btn-lg btn-primary btn-block btn-signin" style="color: white" type="button" onclick="logIn()">Sign in</button>
+            <button class="btn btn-lg btn-primary btn-block btn-signin" style="color: white" type="button" onclick="createAccount()">Create
             </button>
             <h5 id="errorMessage" style="color: red; position: absolute; left: calc(50% - 175px); margin: 5px"></h5>
         </form><!-- /form -->
