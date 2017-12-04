@@ -6,6 +6,7 @@ let myGamePiece;
 let myObstacles = [];
 let powerUps = [];
 let stars = [];
+let planets = [];
 let interval = 200;
 let globalInterval;
 let intervalCleared = false;
@@ -17,6 +18,8 @@ let sprite_ooid;
 let sprite_star1;
 let sprite_star2;
 let sprite_star3;
+let sprite_earth;
+let sprite_moon;
 let background;
 let backgroundY;
 let coin;
@@ -27,6 +30,8 @@ let mouseY;
 let difficulty = 1;
 let score = 0;
 let diffscore = 0;
+let difflevel = 1;
+let maxlevel = 2;
 let scoreflag = true; //when true the score counts;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
@@ -76,6 +81,10 @@ let myGameArea = {
         sprite_star2.src = "../assets/sprites/star2.png";
         sprite_star3 = new Image();
         sprite_star3.src = "../assets/sprites/star3.png";
+        sprite_earth = new Image();
+        sprite_earth.src = "../assets/sprites/earth.png";
+        sprite_moon = new Image();
+        sprite_moon.src = "../assets/sprites/moon.png";
         //set canvas
         this.canvas.setAttribute("id", "mycanvas");
         this.canvas.width = window.innerWidth;
@@ -150,6 +159,22 @@ function component(width, height, color, x, y, type) {
             }
             if (this.type === 3) {
                 ctx.drawImage(sprite_star3, (16 * this.starX),0,16,16,this.x,this.y,32,32);
+            }
+            if (this.ticks > 15) {
+                this.starX++;
+                this.ticks = 0;
+            }
+            this.ticks++;
+        }
+        else if (image === "planet") {
+            if (this.starX > 1) {
+                this.starX = 0;
+            }
+            if (this.type === 1) {
+                ctx.drawImage(sprite_earth, (64 * this.starX), 0, 64, 64, this.x, this.y, 128, 128);
+            }
+            if (this.type === 2) {
+                ctx.drawImage(sprite_moon, (64 * this.starX), 0, 64, 64, this.x, this.y, 64, 64);
             }
             if (this.ticks > 15) {
                 this.starX++;
@@ -295,6 +320,13 @@ function updateGameArea() {
             stars.splice(i,1);
         }
     }
+    for (let i = 0; i < planets.length; i++) {
+        planets[i].y -= 1;
+        planets[i].update("planet");
+        if (planets[i].y < -200) {
+            planets.splice(i,1);
+        }
+    }
     for (let i = 0; i < myObstacles.length; i++) {
         myObstacles[i].y -= 5;
         myObstacles[i].update("ooid");
@@ -310,7 +342,16 @@ function updateGameArea() {
         }
     }
     if (diffscore >= 500) {
+        let color = getRandomColor();
+        let xspot = Math.random() * (screenWidth - 64);
+        let yspot = screenHeight;
+        let obs = new component(64, 64, color, xspot, yspot, difflevel);
+        planets.push(obs);
         diffscore = 0;
+        difflevel++;
+        if (difflevel > maxlevel) {
+            difflevel = 0;
+        }
         difficulty++;
     }
     document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore();
