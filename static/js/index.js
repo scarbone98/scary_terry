@@ -359,7 +359,7 @@ function updateGameArea() {
         diffscore = 0;
         difflevel++;
         if (difflevel > maxlevel) {
-            difflevel = 0;
+            difflevel = 1;
         }
         difficulty++;
     }
