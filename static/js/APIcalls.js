@@ -5,7 +5,7 @@ function twitterCall() {
     $.ajax({
         type: 'POST',
         contentType: 'application/json',
-        url: window.location.href + "twitterCall",
+        url: "/twitterCall",
         success: function (data) {
             // alert(data);
             $("#twitterQuote").html(data + " -Anonymous Poet");

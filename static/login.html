@@ -1,25 +1,40 @@
-<!--
-    you can substitue the span of reauth email for a input with the email and
-    include the remember me checkbox
-    -->
+<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+<script src="https://cdn.firebase.com/libs/firebaseui/2.5.1/firebaseui.js"></script>
+<script src="js/jquery-3.2.1.js"></script>
+<access origin="*"></access>
+<script src="js/login.js"></script>
 <link href="css/login.css" rel="stylesheet" media="all">
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Monoton"/>
-<!--<p><a href="https://en.wikipedia.org/wiki/Red">-->
-    <!--Ooidash-->
-<!--</a></p>-->
+<script type="text/javascript">
+    let config = {
+        apiKey: "AIzaSyDU4o6ytPtTOPEcA0x1ZKMY_Rj_7ntPi-c",
+        authDomain: "ooidash-c189f.firebaseapp.com",
+        databaseURL: "https://ooidash-c189f.firebaseio.com",
+        projectId: "ooidash-c189f",
+        storageBucket: "ooidash-c189f.appspot.com",
+        messagingSenderId: "1015979039222"
+    };
+    firebase.initializeApp(config);
+    let uiConfig = {
+        signInSuccessUrl: window.location.href + "index"
+    };
+    let ui = new firebaseui.auth.AuthUI(firebase.auth());
+    ui.start('#form-login', uiConfig);
+</script>
+<body onload="initApp()" style="transform: translateZ(0);">
 <div class="logo noselect"><b>O<span>oi</span>d<span>a</span>sh</b></div>
 <div class="container">
     <div class="card card-container">
-        <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
-        <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
+        <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"/>
         <p id="profile-name" class="profile-name-card"></p>
-        <form class="form-signin">
+        <form id="form-login" class="form-signin">
             <span id="reauth-email" class="reauth-email"></span>
             <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
             <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-            <div id="remember" class="checkbox">
-            </div>
-            <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
+            <button class="btn btn-lg btn-primary btn-block btn-signin" type="button" onclick="logIn()">Sign in</button>
+            <button class="btn btn-lg btn-primary btn-block btn-signin" type="button" onclick="createAccount()">Create</button>
+            <h5 id="errorMessage" style="color: red; position: absolute; left: calc(50% - 175px); margin: 5px"></h5>
         </form><!-- /form -->
     </div><!-- /card-container -->
 </div><!-- /container -->
+</body>

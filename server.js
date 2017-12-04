@@ -33,6 +33,8 @@ app.post('/twitterCall', function (req, res) {
             }
         });
 });
-
+app.get("/index", function (req, res) {
+    return res.sendFile(__dirname + "/static/index.html");
+});
 let port = process.env.PORT || 8000;
 app.listen(port);

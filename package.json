@@ -12,6 +12,7 @@
     "bootstrap": "^3.3.7",
     "express": "^4.16.2",
     "firebase": "^4.6.2",
+    "firebaseui": "^2.5.1",
     "jquery": "^3.2.1",
     "node": "^9.1.0",
     "twitter": "^1.7.1"
