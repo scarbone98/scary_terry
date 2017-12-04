@@ -22,7 +22,7 @@ app.get('/', function (req, res) {
     return res.sendFile(__dirname + "/static/index.html");
 });
 app.post('/twitterCall', function (req, res) {
-    client.get("https://api.twitter.com/1.1/search/tweets.json?q=geology&count=10",
+    client.get("https://api.twitter.com/1.1/search/tweets.json?q=spacex&count=10",
         [], function (error, tweets, response) {
             if (error) {
                 return res.status(400).send(error);
