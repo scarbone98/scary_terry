@@ -22,6 +22,7 @@ let sprite_earth;
 let sprite_moon;
 let sprite_comet;
 let sprite_mars;
+let sprite_jupiter;
 let sprite_meteor;
 let background;
 let backgroundY;
@@ -34,7 +35,7 @@ let difficulty = 1;
 let score = 0;
 let diffscore = 0;
 let difflevel = 1;
-let maxlevel = 3;
+let maxlevel = 4;
 let scoreflag = true; //when true the score counts;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
@@ -94,6 +95,8 @@ let myGameArea = {
         sprite_mars.src = "../assets/sprites/mars.png";
         sprite_meteor = new Image();
         sprite_meteor.src = "../assets/sprites/meteor.png";
+        sprite_jupiter = new Image();
+        sprite_jupiter.src = "../assets/sprites/jupiter.png";
         //set canvas
         this.canvas.setAttribute("id", "mycanvas");
         this.canvas.width = window.innerWidth;
@@ -193,11 +196,14 @@ function component(width, height, color, x, y, type) {
             if (this.type === 1) {
                 ctx.drawImage(sprite_earth, (64 * this.starX), 0, 64, 64, this.x, this.y, 64 * 3, 64 * 3);
             }
-            if (this.type === 2) {
+            else if (this.type === 2) {
                 ctx.drawImage(sprite_moon, (64 * this.starX), 0, 64, 64, this.x, this.y, 32 * 3, 32 * 3);
             }
-            if (this.type === 3) {
+            else if (this.type === 3) {
                 ctx.drawImage(sprite_mars, (64 * this.starX), 0, 64, 64, this.x, this.y, 64 * 3, 64 * 3);
+            }
+            else if (this.type === 4) {
+                ctx.drawImage(sprite_jupiter, this.x, this.y, 128 * 3, 128 * 3);
             }
             if (this.ticks > 15) {
                 this.starX++;
@@ -362,7 +368,7 @@ function updateGameArea() {
     for (let i = 0; i < planets.length; i++) {
         planets[i].y -= 1;
         planets[i].update("planet");
-        if (planets[i].y < -200) {
+        if (planets[i].y < -500) {
             planets.splice(i,1);
         }
     }
