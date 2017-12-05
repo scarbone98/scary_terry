@@ -23,7 +23,7 @@ function initApp() {
     setInterval(update, 30);
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-            // window.location.href = "/index";
+            window.location.href = "/index";
         }
     }, function(error) {
         console.log(error);
