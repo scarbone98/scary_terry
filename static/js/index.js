@@ -40,8 +40,20 @@ function resizeCanvas() {
 }
 function startGame() {
     //Init line for replaying
-    mouseY = 0;mouseX = 0;myObstacles = [];powerUps = [];stars = [];planets = [];bonusScore = 0;backgroundY = 0;
-    ptimer = 0;difficulty = 1;diffscore = 0;score = 0;maxlevel = 4;scoreflag = true;
+    mouseY = 0;
+    mouseX = 0;
+    myObstacles = [];
+    powerUps = [];
+    stars = [];
+    planets = [];
+    bonusScore = 0;
+    backgroundY = 0;
+    ptimer = 0;
+    difficulty = 1;
+    diffscore = 0;
+    score = 0;
+    maxlevel = 4;
+    scoreflag = true;
     myScore = new component(50, 50, 'white', 50, 10);
     myGamePiece = new component((28 * 2) - 6, (20 * 2) - 1, "red", 10, 120);
     myGameArea.start();
@@ -103,22 +115,7 @@ let myGameArea = {
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
         this.interval = setInterval(update, updateSpeed);
-        this.canvas.addEventListener('click', (event) => {
-            let upperBound = (window.innerHeight / 2 - parseInt(this.context.font));
-            let lowerBound = (window.innerHeight / 2);
-            if (event.pageY >= upperBound && event.pageY <= lowerBound){
-                this.canvas.style.cursor = "none";
-                clearInterval(this.interval);
-                // audio = new Audio('/assets/audio/ooidashtheme.mp3');
-                // $(audio).bind('ended', () => {
-                //    audio.currentTime = 0;
-                //    audio.play();
-                // });
-                // audio.play();
-                this.interval = setInterval(updateGameArea, updateSpeed);
-                globalInterval = this.interval;
-            }
-        });
+        this.canvas.addEventListener('click', menuHandler);
     },
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -127,8 +124,8 @@ let myGameArea = {
         if (backgroundY > height) {
             backgroundY = 0;
         }
-        for (let j = 0; j < myGameArea.canvas.width + width*2; j += width) {
-            for (let i = 0; i < myGameArea.canvas.height + height*2; i += height) {
+        for (let j = 0; j < myGameArea.canvas.width + width * 2; j += width) {
+            for (let i = 0; i < myGameArea.canvas.height + height * 2; i += height) {
                 this.context.drawImage(background, 0, i - backgroundY, j - 100, myGameArea.canvas.height);
             }
         }
@@ -144,6 +141,23 @@ function update() {
     ctx.textAlign = "center";
     ctx.fillText("START GAME", window.innerWidth / 2, window.innerHeight / 2);
 }
+let menuHandler = function(event) {
+    let upperBound = (window.innerHeight / 2 - parseInt(myGameArea.context.font));
+    let lowerBound = (window.innerHeight / 2);
+    if (event.pageY >= upperBound && event.pageY <= lowerBound) {
+        myGameArea.canvas.style.cursor = "none";
+        clearInterval(myGameArea.interval);
+        // audio = new Audio('/assets/audio/ooidashtheme.mp3');
+        // $(audio).bind('ended', () => {
+        //    audio.currentTime = 0;
+        //    audio.play();
+        // });
+        // audio.play();
+        myGameArea.canvas.removeEventListener('click', menuHandler);
+        myGameArea.interval = setInterval(updateGameArea, updateSpeed);
+        globalInterval = myGameArea.interval;
+    }
+};
 function component(width, height, color, x, y, type) {
     this.type = type;
     this.score = 0;
