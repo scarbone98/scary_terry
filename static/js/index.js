@@ -39,7 +39,9 @@ function resizeCanvas() {
     }
 }
 function startGame() {
-    backgroundY = 0;
+    //Init line for replaying
+    mouseY = 0;mouseX = 0;myObstacles = [];powerUps = [];stars = [];planets = [];bonusScore = 0;backgroundY = 0;
+    ptimer = 0;difficulty = 1;diffscore = 0;score = 0;maxlevel = 4;scoreflag = true;
     myScore = new component(50, 50, 'white', 50, 10);
     myGamePiece = new component((28 * 2) - 6, (20 * 2) - 1, "red", 10, 120);
     myGameArea.start();
@@ -136,6 +138,7 @@ let myGameArea = {
 function update() {
     let ctx = myGameArea.context;
     myGameArea.clear();
+    myGameArea.canvas.style.cursor = "auto";
     ctx.fillStyle = 'white';
     ctx.font = "60pt Monoton";
     ctx.textAlign = "center";
@@ -305,13 +308,14 @@ function updateGameArea() {
                     clearInterval(globalInterval);
                     // audio.pause();
                     // audio.currentTime = 0;
-                    intervalCleared = true;
+                    // myGameArea.interval = setInterval(update, updateSpeed);
+                    // intervalCleared = true;
                     twitterCall();
                     addEntry(getScore());
                     if (!leaderBoardOpen) {
                         toggleLeaderboard();
                     }
-                    return;
+                    startGame();
                 }
             }
         }
