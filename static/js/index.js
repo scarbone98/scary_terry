@@ -2,6 +2,7 @@
  * Created by scarbone on 11/11/17.
  * Contributed to by slondon too, okay?
  */
+let muteIcon;
 let myGamePiece;
 let myObstacles = [];
 let powerUps = [];
@@ -28,6 +29,8 @@ let myScore;
 let updateSpeed = 15;
 let scoreflag = true; //when true the score counts;
 let audioPlay1, audioPlay2;
+let playAudio = true;
+let speakerIcon;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
     if (canvas.width < window.innerWidth) {
@@ -75,6 +78,10 @@ let myGameArea = {
             mouseY = e.clientY - 32;
         });
         //set sprites
+        speakerIcon = new Image();
+        speakerIcon.src = "../assets/icons/speaker.png";
+        muteIcon = new Image();
+        muteIcon.src = "../assets/icons/mute.png";
         sprite_idle = new Image();
         sprite_idle.src = "../assets/sprites/oldmanterry2.png";
         sprite_jump = new Image();
@@ -140,6 +147,11 @@ function update() {
     ctx.font = "60pt Monoton";
     ctx.textAlign = "center";
     ctx.fillText("START GAME", window.innerWidth / 2, window.innerHeight / 2);
+    if (playAudio) {
+        ctx.drawImage(speakerIcon, 32, 32);
+    } else {
+        ctx.drawImage(muteIcon, 32, 32);
+    }
 }
 let menuHandler = function (event) {
     let upperBound = (window.innerHeight / 2 - parseInt(myGameArea.context.font));
@@ -147,21 +159,27 @@ let menuHandler = function (event) {
     if (event.pageY >= upperBound && event.pageY <= lowerBound) {
         myGameArea.canvas.style.cursor = "none";
         clearInterval(myGameArea.interval);
-        audioPlay1 = new Audio('/assets/audio/ooidashtheme.mp3');
-        audioPlay2 = new Audio('/assets/audio/ooidashtheme.mp3');
-        $(audioPlay1).bind('ended', () => {
-            audioPlay1.currentTime = 0;
-            $(audioPlay2).bind('ended', () => {
-                audioPlay2.currentTime = 0;
-                audioPlay1.play();
+        if (playAudio) {
+            audioPlay1 = new Audio('/assets/audio/ooidashtheme.mp3');
+            audioPlay2 = new Audio('/assets/audio/ooidashtheme.mp3');
+            $(audioPlay1).bind('ended', () => {
+                audioPlay1.currentTime = 0;
+                $(audioPlay2).bind('ended', () => {
+                    audioPlay2.currentTime = 0;
+                    audioPlay1.play();
+                });
+                audioPlay2.play();
             });
-            audioPlay2.play();
-        });
-        audioPlay1.play();
+            audioPlay1.play();
+        }
+        myGameArea.canvas.removeEventListener('click', menuHandler);
+        myGameArea.interval = setInterval(updateGameArea, updateSpeed);
+        globalInterval = myGameArea.interval;
     }
-    myGameArea.canvas.removeEventListener('click', menuHandler);
-    myGameArea.interval = setInterval(updateGameArea, updateSpeed);
-    globalInterval = myGameArea.interval;
+    else if (event.pageY <= 32 + 32 && event.pageY >= 32
+        && event.pageX <= 32 + 32 && event.pageX >= 32) {
+        playAudio = !playAudio;
+    }
 };
 function component(width, height, color, x, y, type) {
     this.type = type;
@@ -325,12 +343,12 @@ function updateGameArea() {
             if (invincibility === false) {
                 if (myGamePiece.crashWith(myObstacles[i])) {
                     clearInterval(globalInterval);
-                    audioPlay1.pause();
-                    audioPlay1.currentTime = 0;
-                    audioPlay2.pause();
-                    audioPlay2.currentTime = 0;
-                    myGameArea.interval = setInterval(update, updateSpeed);
-                    // intervalCleared = true;
+                    if (playAudio) {
+                        audioPlay1.pause();
+                        audioPlay1.currentTime = 0;
+                        audioPlay2.pause();
+                        audioPlay2.currentTime = 0;
+                    }
                     twitterCall();
                     addEntry(getScore());
                     if (!leaderBoardOpen) {

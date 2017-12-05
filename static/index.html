@@ -76,25 +76,6 @@
         </div>
     </div>
 </div>
-<div class="container">
-    <div class="modal fade" id="winnerModal" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="text-align: center">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 id="userScoreHeader" class="modal-title"></h4>
-                </div>
-                <div class="modal-body" style="text-align: center">
-                    <input type="text" placeholder="username" id="userName">
-                    <button class="btn btn-default" onclick="addEntry(getScore())">ADD SCORE</button>
-                    <h4 style="text-align: left">Random Space Tweet</h4>
-                    <div id="twitterQuote"></div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
 <button id="winnerToggle" data-toggle="modal" data-target="#winnerModal" style="display: none"></button>
 <button id="leaderboardButton" type="button" style="display: none" data-toggle="modal" data-target="#myModal"></button>
 <script>
