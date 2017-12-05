@@ -27,7 +27,7 @@ let maxlevel = 4;
 let myScore;
 let updateSpeed = 15;
 let scoreflag = true; //when true the score counts;
-let audio;
+let audioPlay1, audioPlay2;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
     if (canvas.width < window.innerWidth) {
@@ -141,22 +141,27 @@ function update() {
     ctx.textAlign = "center";
     ctx.fillText("START GAME", window.innerWidth / 2, window.innerHeight / 2);
 }
-let menuHandler = function(event) {
+let menuHandler = function (event) {
     let upperBound = (window.innerHeight / 2 - parseInt(myGameArea.context.font));
     let lowerBound = (window.innerHeight / 2);
     if (event.pageY >= upperBound && event.pageY <= lowerBound) {
         myGameArea.canvas.style.cursor = "none";
         clearInterval(myGameArea.interval);
-        // audio = new Audio('/assets/audio/ooidashtheme.mp3');
-        // $(audio).bind('ended', () => {
-        //    audio.currentTime = 0;
-        //    audio.play();
-        // });
-        // audio.play();
-        myGameArea.canvas.removeEventListener('click', menuHandler);
-        myGameArea.interval = setInterval(updateGameArea, updateSpeed);
-        globalInterval = myGameArea.interval;
+        audioPlay1 = new Audio('/assets/audio/ooidashtheme.mp3');
+        audioPlay2 = new Audio('/assets/audio/ooidashtheme.mp3');
+        $(audioPlay1).bind('ended', () => {
+            audioPlay1.currentTime = 0;
+            $(audioPlay2).bind('ended', () => {
+                audioPlay2.currentTime = 0;
+                audioPlay1.play();
+            });
+            audioPlay2.play();
+        });
+        audioPlay1.play();
     }
+    myGameArea.canvas.removeEventListener('click', menuHandler);
+    myGameArea.interval = setInterval(updateGameArea, updateSpeed);
+    globalInterval = myGameArea.interval;
 };
 function component(width, height, color, x, y, type) {
     this.type = type;
@@ -320,9 +325,11 @@ function updateGameArea() {
             if (invincibility === false) {
                 if (myGamePiece.crashWith(myObstacles[i])) {
                     clearInterval(globalInterval);
-                    // audio.pause();
-                    // audio.currentTime = 0;
-                    // myGameArea.interval = setInterval(update, updateSpeed);
+                    audioPlay1.pause();
+                    audioPlay1.currentTime = 0;
+                    audioPlay2.pause();
+                    audioPlay2.currentTime = 0;
+                    myGameArea.interval = setInterval(update, updateSpeed);
                     // intervalCleared = true;
                     twitterCall();
                     addEntry(getScore());

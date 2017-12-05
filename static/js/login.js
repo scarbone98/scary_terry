@@ -8,7 +8,7 @@ function resizeCanvas() {
     }
 
     if (canvas.height < window.innerHeight) {
-        canvas.height = window.innerHeight / 1.10;
+        canvas.height = window.innerHeight;
     }
 }
 function initApp() {
