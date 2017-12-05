@@ -4,6 +4,13 @@
 let counter = 1;
 let firebaseRef = firebase.database().ref('leaderboard');
 let scores = [];
+function getScores() {
+    firebaseRef.orderByChild('negativeScore').limitToFirst(15).once('value', function (snapshot) {
+        snapshot.forEach(function (childSnapshots) {
+            scores.push(parseInt(childSnapshots.child('score').val()));
+        });
+    });
+}
 function initBoard() {
     counter = 1;
     let board = document.getElementById('leaderboard');
@@ -55,25 +62,46 @@ function initBoard() {
             row.appendChild(scoreCol);
             board.appendChild(row);
             counter++;
-            scores.push(parseInt(score.innerHTML));
+            // scores.push(parseInt(score.innerHTML));
         });
     });
 }
 function addEntry(score) {
-    let userName = document.getElementById('userName').value;
-    if(userName === ""){
-        userName = "Madmax";
+    let flag = 3;
+    getScores();
+    let user = firebase.auth().currentUser;
+    if (parseInt(score) > parseInt(scores[scores.length - 1]) || scores.length < 15) {
+        firebaseRef.child(user.uid + score).child('username').set(user.displayName).then(()=>{
+            flag--;
+            if(flag <= 0){
+                initBoard();
+                if (!leaderBoardOpen) {
+                    toggleLeaderboard();
+                }
+            }
+        });
+        firebaseRef.child(user.uid + score).child('score').set(score).then(()=>{
+            flag--;
+            if(flag <= 0){
+                initBoard();
+                if (!leaderBoardOpen) {
+                    toggleLeaderboard();
+                }
+            }
+        });
+        firebaseRef.child(user.uid + score).child('negativeScore').set(-1 * score).then(()=>{
+            flag--;
+            if(flag <= 0){
+                initBoard();
+                if (!leaderBoardOpen) {
+                    toggleLeaderboard();
+                }
+            }
+        });
     }
-    let hash = Math.random() * 20000000;
-    hash = Math.ceil(hash) * 17;
-    hash = hash / userName.length + score;
-    hash = Math.ceil(hash);
-    firebaseRef.child(hash).child('username').set(userName);
-    firebaseRef.child(hash).child('score').set(score);
-    firebaseRef.child(hash).child('negativeScore').set(-1 * score);
-    initBoard();
-    if(!leaderBoardOpen) {
-        toggleLeaderboard();
-    }
-    toggleAddEntry();
+}
+function signOut() {
+    firebase.auth().signOut().then(()=>{
+        window.location.href = "/";
+    });
 }

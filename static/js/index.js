@@ -12,27 +12,11 @@ let globalInterval;
 let intervalCleared = false;
 let screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 let screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-let sprite_idle;
-let sprite_jump;
-let sprite_ooid;
-let sprite_star1;
-let sprite_star2;
-let sprite_star3;
-let sprite_earth;
-let sprite_moon;
-let sprite_comet;
-let sprite_mars;
-let sprite_jupiter;
-let sprite_ppower;
-let sprite_meteor;
-let sprite_shield;
-let background;
-let backgroundY;
-let coin;
+let sprite_idle, sprite_jump, sprite_ooid, sprite_star1, sprite_star2, sprite_star3, sprite_earth;
+let sprite_moon, sprite_comet, sprite_mars, sprite_jupiter, sprite_ppower, sprite_meteor, sprite_shield;
+let background, backgroundY, coin;
 let bonusScore = 0;
-let updateSpeed = 15;
-let mouseX;
-let mouseY;
+let mouseX, mouseY;
 let invincibility = false;
 let ptimer = 0;
 let difficulty = 1;
@@ -40,7 +24,10 @@ let score = 0;
 let diffscore = 0;
 let difflevel = 1;
 let maxlevel = 4;
+let myScore;
+let updateSpeed = 15;
 let scoreflag = true; //when true the score counts;
+let audio;
 function resizeCanvas() {
     let canvas = document.getElementById("mycanvas");
     if (canvas.width < window.innerWidth) {
@@ -48,11 +35,12 @@ function resizeCanvas() {
     }
 
     if (canvas.height < window.innerHeight) {
-        canvas.height = window.innerHeight / 1.10;
+        canvas.height = window.innerHeight;
     }
 }
 function startGame() {
     backgroundY = 0;
+    myScore = new component(50, 50, 'white', 50, 10);
     myGamePiece = new component((28 * 2) - 6, (20 * 2) - 1, "red", 10, 120);
     myGameArea.start();
 
@@ -69,8 +57,8 @@ let myGameArea = {
     canvas: document.createElement("canvas"),
     start: function () {
         this.canvas.addEventListener('mousemove', function (e) {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+            mouseX = e.clientX - 32;
+            mouseY = e.clientY - 32;
         });
         //set sprites
         sprite_idle = new Image();
@@ -108,12 +96,27 @@ let myGameArea = {
         //set canvas
         this.canvas.setAttribute("id", "mycanvas");
         this.canvas.width = window.innerWidth;
-        this.canvas.height = screenHeight / 1.10;
+        this.canvas.height = window.innerHeight;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
-        this.interval = setInterval(updateGameArea, updateSpeed);
-        globalInterval = this.interval;
+        this.interval = setInterval(update, updateSpeed);
+        this.canvas.addEventListener('click', (event) => {
+            let upperBound = (window.innerHeight / 2 - parseInt(this.context.font));
+            let lowerBound = (window.innerHeight / 2);
+            if (event.pageY >= upperBound && event.pageY <= lowerBound){
+                this.canvas.style.cursor = "none";
+                clearInterval(this.interval);
+                // audio = new Audio('/assets/audio/ooidashtheme.mp3');
+                // $(audio).bind('ended', () => {
+                //    audio.currentTime = 0;
+                //    audio.play();
+                // });
+                // audio.play();
+                this.interval = setInterval(updateGameArea, updateSpeed);
+                globalInterval = this.interval;
+            }
+        });
     },
     clear: function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -122,14 +125,22 @@ let myGameArea = {
         if (backgroundY > height) {
             backgroundY = 0;
         }
-        for (let j = 0; j < myGameArea.canvas.width + width; j += width) {
-            for (let i = 0; i < myGameArea.canvas.height + height; i += height) {
+        for (let j = 0; j < myGameArea.canvas.width + width*2; j += width) {
+            for (let i = 0; i < myGameArea.canvas.height + height*2; i += height) {
                 this.context.drawImage(background, 0, i - backgroundY, j - 100, myGameArea.canvas.height);
             }
         }
         backgroundY += 0.75;
     }
 };
+function update() {
+    let ctx = myGameArea.context;
+    myGameArea.clear();
+    ctx.fillStyle = 'white';
+    ctx.font = "60pt Monoton";
+    ctx.textAlign = "center";
+    ctx.fillText("START GAME", window.innerWidth / 2, window.innerHeight / 2);
+}
 function component(width, height, color, x, y, type) {
     this.type = type;
     this.score = 0;
@@ -153,8 +164,14 @@ function component(width, height, color, x, y, type) {
                 ctx.drawImage(sprite_idle, this.x + 3, this.y, 28 * 2, 20 * 2);
             }
             if (invincibility === true) {
-                ctx.drawImage(sprite_shield, this.x - 16, this.y - 24, 32*3, 32*3);
+                ctx.drawImage(sprite_shield, this.x - 16, this.y - 24, 32 * 3, 32 * 3);
             }
+        }
+        else if (image === "score") {
+            ctx.fillStyle = color;
+            ctx.font = "30px Arial";
+            ctx.textAlign = "start";
+            ctx.fillText("Score: " + getScore(), 10, 50);
         }
         else if (image === "coin") {
             if (this.coinX > 3) {
@@ -180,7 +197,7 @@ function component(width, height, color, x, y, type) {
                 ctx.drawImage(sprite_comet, this.x - 15, this.y - 2, 64, 64);
             }
             else if (this.type === 3) {
-                ctx.drawImage(sprite_meteor, this.x -15, this.y, 64 * 2, 64 * 2);
+                ctx.drawImage(sprite_meteor, this.x - 15, this.y, 64 * 2, 64 * 2);
             }
             else {
                 ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
@@ -194,10 +211,10 @@ function component(width, height, color, x, y, type) {
                 ctx.drawImage(sprite_star1, (16 * this.starX), 0, 16, 16, this.x, this.y, 32, 32);
             }
             if (this.type === 2) {
-                ctx.drawImage(sprite_star2, (16 * this.starX),0,16,16,this.x,this.y,32,32);
+                ctx.drawImage(sprite_star2, (16 * this.starX), 0, 16, 16, this.x, this.y, 32, 32);
             }
             if (this.type === 3) {
-                ctx.drawImage(sprite_star3, (16 * this.starX),0,16,16,this.x,this.y,32,32);
+                ctx.drawImage(sprite_star3, (16 * this.starX), 0, 16, 16, this.x, this.y, 32, 32);
             }
             if (this.ticks > 15) {
                 this.starX++;
@@ -241,14 +258,14 @@ function component(width, height, color, x, y, type) {
         this.hitLeft();
     };
     this.hitRight = function () {
-      if(this.x > screenWidth - this.width){
-          this.x = screenWidth - this.width;
-      }
+        if (this.x > window.innerWidth - 64) {
+            this.x = window.innerWidth - 64;
+        }
     };
     this.hitLeft = function () {
-      if(this.x < 0){
-          this.x = this.width;
-      }
+        if (this.x < 0) {
+            this.x = 0;
+        }
     };
     this.hitTop = function () {
         if (this.y < 0) {
@@ -286,12 +303,12 @@ function updateGameArea() {
             if (invincibility === false) {
                 if (myGamePiece.crashWith(myObstacles[i])) {
                     clearInterval(globalInterval);
+                    // audio.pause();
+                    // audio.currentTime = 0;
                     intervalCleared = true;
                     twitterCall();
-                    if (getScore() > scores[scores.length - 1] || scores.length < 15) {
-                        toggleAddEntry();
-                    }
-                    else if (!leaderBoardOpen) {
+                    addEntry(getScore());
+                    if (!leaderBoardOpen) {
                         toggleLeaderboard();
                     }
                     return;
@@ -307,14 +324,14 @@ function updateGameArea() {
                 }
                 else if (powerUps[i].type === 2) {
                     invincibility = true;
-                    powerUps.splice(i,1);
+                    powerUps.splice(i, 1);
                 }
             }
         }
     }
     myGameArea.clear();
 
-    if (invincibility === true && (myGameArea.frameNo % 60) === 0 ) {
+    if (invincibility === true && (myGameArea.frameNo % 60) === 0) {
         ptimer++;
     }
     if (invincibility === true && ptimer >= 10) {
@@ -364,7 +381,7 @@ function updateGameArea() {
                 powerUps.push(new component(30, 45, color, xspot, yspot, 1));
             }
             else if (powerUp >= 55) {
-                powerUps.push(new component(32,32, color, xspot, yspot, 2));
+                powerUps.push(new component(32, 32, color, xspot, yspot, 2));
             }
         }
     }
@@ -374,13 +391,13 @@ function updateGameArea() {
         let xspot = Math.random() * (screenWidth - 64);
         let yspot = screenHeight;
         if (starType <= 50) {
-            stars.push(new component(16,16, color,xspot,yspot,1))
+            stars.push(new component(16, 16, color, xspot, yspot, 1))
         }
         else if (starType <= 80) {
-            stars.push(new component(16,16, color, xspot,yspot, 2));
+            stars.push(new component(16, 16, color, xspot, yspot, 2));
         }
         else if (starType <= 150) {
-            stars.push(new component(16,16, color, xspot,yspot, 3));
+            stars.push(new component(16, 16, color, xspot, yspot, 3));
         }
     }
 
@@ -407,14 +424,14 @@ function updateGameArea() {
         stars[i].y -= 1;
         stars[i].update("star");
         if (stars[i].y < -10) {
-            stars.splice(i,1);
+            stars.splice(i, 1);
         }
     }
     for (let i = 0; i < planets.length; i++) {
         planets[i].y -= 1;
         planets[i].update("planet");
         if (planets[i].y < -500) {
-            planets.splice(i,1);
+            planets.splice(i, 1);
         }
     }
     for (let i = 0; i < myObstacles.length; i++) {
@@ -450,7 +467,7 @@ function updateGameArea() {
         }
         difficulty++;
     }
-    //document.getElementById("scoreBoard").innerHTML = "Depth: " + getScore();
+    myScore.update("score");
     myGamePiece.newPos();
     myGamePiece.update("idle");
 }
