@@ -338,7 +338,7 @@ function component(width, height, color, x, y, type) {
 function updateGameArea() {
     let x, gap, minHeight, maxHeight, minGap, maxGap;
     //Check for collisions
-    if (myGameArea.frameNo > 50) {
+    if (myGameArea.frameNo > 10) {
         for (let i = 0; i < myObstacles.length; i += 1) {
             if (invincibility === false) {
                 if (myGamePiece.crashWith(myObstacles[i])) {

@@ -41,7 +41,6 @@ function logIn() {
     let password = document.getElementById("inputPassword").value;
     firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
         if (user) {
-            // $("#loginBody").fadeOut(1000, window.location);
             window.location.href = "/index";
         } else {
             errorMessage.html("Wrong username or password.");
@@ -51,7 +50,6 @@ function logIn() {
     });
 }
 function createAccount() {
-    let firebaseRef = firebase.database().ref('users');
     let errorMessage = $("#errorMessage");
     errorMessage.html("");
     let userName = document.getElementById("inputEmail").value;
@@ -66,9 +64,9 @@ function createAccount() {
     let email = userName + "@gmail.com";
     let password = document.getElementById("inputPassword").value;
     firebase.auth().createUserWithEmailAndPassword(email, password).then((user) => {
-        user.updateProfile({displayName: userName}).then( function () {
+        user.updateProfile({displayName: userName}).then(() => {
             window.location.href = "/index";
-        });
+        })
     }).catch((error) => {
         errorMessage.html(error.message);
     });
@@ -80,8 +78,8 @@ function update() {
     if (backgroundY > height) {
         backgroundY = 0;
     }
-    for (let j = 0; j < canvas.width + width; j += width) {
-        for (let i = 0; i < canvas.height + height; i += height) {
+    for (let j = 0; j < canvas.width + width*2; j += width) {
+        for (let i = 0; i < canvas.height + height*2; i += height) {
             canvas.context.drawImage(background, 0, i - backgroundY, j - 100, canvas.height);
         }
     }

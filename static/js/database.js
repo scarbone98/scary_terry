@@ -67,41 +67,30 @@ function initBoard() {
     });
 }
 function addEntry(score) {
-    let flag = 3;
     getScores();
     let user = firebase.auth().currentUser;
     if (parseInt(score) > parseInt(scores[scores.length - 1]) || scores.length < 15) {
-        firebaseRef.child(user.uid + score).child('username').set(user.displayName).then(()=>{
-            flag--;
-            if(flag <= 0){
-                initBoard();
-                if (!leaderBoardOpen) {
-                    toggleLeaderboard();
-                }
-            }
+        console.log(user.displayName);
+        firebaseRef.child(user.uid + score).child('username').set(user.displayName).then(() => {
+            firebaseRef.child(user.uid + score).child('score').set(score).then(() => {
+                firebaseRef.child(user.uid + score).child('negativeScore').set(-1 * score).then(() => {
+                    initBoard();
+                    if (!leaderBoardOpen) {
+                        toggleLeaderboard();
+                    }
+                });
+            });
         });
-        firebaseRef.child(user.uid + score).child('score').set(score).then(()=>{
-            flag--;
-            if(flag <= 0){
-                initBoard();
-                if (!leaderBoardOpen) {
-                    toggleLeaderboard();
-                }
-            }
-        });
-        firebaseRef.child(user.uid + score).child('negativeScore').set(-1 * score).then(()=>{
-            flag--;
-            if(flag <= 0){
-                initBoard();
-                if (!leaderBoardOpen) {
-                    toggleLeaderboard();
-                }
-            }
-        });
+    }
+    else {
+        initBoard();
+        if (!leaderBoardOpen) {
+            toggleLeaderboard();
+        }
     }
 }
 function signOut() {
-    firebase.auth().signOut().then(()=>{
+    firebase.auth().signOut().then(() => {
         window.location.href = "/";
     });
 }

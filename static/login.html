@@ -39,11 +39,11 @@
         messagingSenderId: "1015979039222"
     };
     firebase.initializeApp(config);
-    let uiConfig = {
-        signInSuccessUrl: window.location.href + "index"
-    };
-    let ui = new firebaseui.auth.AuthUI(firebase.auth());
-    ui.start('#form-login', uiConfig);
+//    let uiConfig = {
+//        signInSuccessUrl: window.location.href + "index"
+//    };
+//    let ui = new firebaseui.auth.AuthUI(firebase.auth());
+//    ui.start('#form-login', uiConfig);
 </script>
 <head>
     <title>Ooidash</title>
@@ -54,7 +54,7 @@
     <div class="card card-container">
         <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"/>
         <p id="profile-name" class="profile-name-card"></p>
-        <form id="form-login" class="form-signin">
+        <div id="form-login" class="form-signin">
             <span id="reauth-email" class="reauth-email"></span>
             <input type="email" id="inputEmail" class="form-control" placeholder="Username" required autofocus>
             <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
@@ -62,7 +62,7 @@
             <button class="btn btn-lg btn-primary btn-block btn-signin" style="color: white" type="button" onclick="createAccount()">Create
             </button>
             <h5 id="errorMessage"></h5>
-        </form><!-- /form -->
+        </div><!-- /form -->
     </div><!-- /card-container -->
 </div><!-- /container -->
 </body>
