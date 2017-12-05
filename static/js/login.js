@@ -59,6 +59,10 @@ function createAccount() {
         errorMessage.html("Please do not include @ in your username.");
         return;
     }
+    else if (userName.length < 2){
+        errorMessage.html("Please make username at least 2 characters long.");
+        return;
+    }
     let email = userName + "@gmail.com";
     let password = document.getElementById("inputPassword").value;
     firebase.auth().createUserWithEmailAndPassword(email, password).then((user) => {
