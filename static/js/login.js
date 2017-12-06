@@ -21,11 +21,11 @@ function initApp() {
     canvas.setAttribute("id", "mycanvas");
     document.body.insertBefore(canvas, document.body.childNodes[0]);
     setInterval(update, 30);
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             window.location.href = "/index";
         }
-    }, function(error) {
+    }, function (error) {
         console.log(error);
     });
 }
@@ -33,10 +33,6 @@ function logIn() {
     let errorMessage = $("#errorMessage");
     errorMessage.html("");
     let userName = document.getElementById("inputEmail").value;
-    if(userName.indexOf("@") !== -1){
-        errorMessage.html("Please do not include @ in your username.");
-        return;
-    }
     let email = userName + "@gmail.com";
     let password = document.getElementById("inputPassword").value;
     firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
@@ -46,27 +42,25 @@ function logIn() {
             errorMessage.html("Wrong username or password.");
         }
     }).catch((error) => {
-        errorMessage.html(error.message);
+        errorMessage.html("Wrong username or password.");
     });
 }
 function createAccount() {
     let errorMessage = $("#errorMessage");
     errorMessage.html("");
     let userName = document.getElementById("inputEmail").value;
-    if(userName.indexOf("@") !== -1){
-        errorMessage.html("Please do not include @ in your username.");
+    if (userName.indexOf("@") !== -1 || userName.indexOf(" ") !== -1) {
+        errorMessage.html("Please do not include @ or spaces in your username.");
         return;
     }
-    else if (userName.length < 2){
+    else if (userName.length < 2) {
         errorMessage.html("Please make username at least 2 characters long.");
         return;
     }
     let email = userName + "@gmail.com";
     let password = document.getElementById("inputPassword").value;
     firebase.auth().createUserWithEmailAndPassword(email, password).then((user) => {
-        user.updateProfile({displayName: userName}).then(() => {
-            window.location.href = "/index";
-        })
+        window.location.href = "/index";
     }).catch((error) => {
         errorMessage.html(error.message);
     });
@@ -78,8 +72,8 @@ function update() {
     if (backgroundY > height) {
         backgroundY = 0;
     }
-    for (let j = 0; j < canvas.width + width*2; j += width) {
-        for (let i = 0; i < canvas.height + height*2; i += height) {
+    for (let j = 0; j < canvas.width + width * 2; j += width) {
+        for (let i = 0; i < canvas.height + height * 2; i += height) {
             canvas.context.drawImage(background, 0, i - backgroundY, j - 100, canvas.height);
         }
     }

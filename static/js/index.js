@@ -336,6 +336,7 @@ function component(width, height, color, x, y, type) {
 }
 
 function updateGameArea() {
+    if (getScore() > 550) return;
     let x, gap, minHeight, maxHeight, minGap, maxGap;
     //Check for collisions
     if (myGameArea.frameNo > 10) {
@@ -381,7 +382,6 @@ function updateGameArea() {
         invincibility = false;
         ptimer = 0;
     }
-
 
     //Generate objects
     if (myGameArea.frameNo === 0) {
