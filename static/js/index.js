@@ -80,6 +80,10 @@ let myGameArea = {
             mouseY = e.clientY - 32;
         });
         //set sprites
+        audioPlay = new Howl({
+            src: ['/assets/audio/ooidashtheme2.mp3','/assets/audio/ooidashtheme2.oog'],
+            loop: true
+        });
         speakerIcon = new Image();
         speakerIcon.src = "../assets/icons/speaker.png";
         muteIcon = new Image();
@@ -164,10 +168,6 @@ let menuHandler = function (event) {
         myGameArea.canvas.style.cursor = "none";
         clearInterval(myGameArea.interval);
         if (playAudio) {
-            audioPlay = new Howl({
-                src: ['/assets/audio/ooidashtheme2.mp3','/assets/audio/ooidashtheme2.oog'],
-                loop: true
-            });
             audioPlay.play();
         }
         myGameArea.canvas.removeEventListener('click', menuHandler);
