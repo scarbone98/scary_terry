@@ -2,7 +2,6 @@
  * Created by scarbone on 11/11/17.
  */
 'use strict';
-let path = require('path');
 let Twitter = require('twitter');
 let express = require('express');
 let bodyParser = require('body-parser');
@@ -17,7 +16,6 @@ app.use(bodyParser.json());
 app.use("/css", express.static(__dirname + '/static/css'));
 app.use("/js", express.static(__dirname + '/static/js'));
 app.use("/assets", express.static(__dirname + '/static/assets'));
-
 app.get('/', function (req, res) {
     return res.sendFile(__dirname + "/static/login.html");
 });

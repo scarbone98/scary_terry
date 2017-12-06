@@ -28,10 +28,12 @@ let maxlevel = 4;
 let myScore;
 let updateSpeed = 15;
 let scoreflag = true; //when true the score counts;
-let audioPlay1, audioPlay2;
 let playAudio = true;
 let speakerIcon;
+let audioPlay;
 function resizeCanvas() {
+    screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     let canvas = document.getElementById("mycanvas");
     if (canvas.width < window.innerWidth) {
         canvas.width = window.innerWidth;
@@ -160,17 +162,11 @@ let menuHandler = function (event) {
         myGameArea.canvas.style.cursor = "none";
         clearInterval(myGameArea.interval);
         if (playAudio) {
-            audioPlay1 = new Audio('/assets/audio/ooidashtheme.mp3');
-            audioPlay2 = new Audio('/assets/audio/ooidashtheme.mp3');
-            $(audioPlay1).bind('ended', () => {
-                audioPlay1.currentTime = 0;
-                $(audioPlay2).bind('ended', () => {
-                    audioPlay2.currentTime = 0;
-                    audioPlay1.play();
-                });
-                audioPlay2.play();
+            audioPlay = new Howl({
+                src: ['/assets/audio/ooidashtheme.mp3'],
+                loop: true
             });
-            audioPlay1.play();
+            audioPlay.play();
         }
         myGameArea.canvas.removeEventListener('click', menuHandler);
         myGameArea.interval = setInterval(updateGameArea, updateSpeed);
@@ -344,10 +340,7 @@ function updateGameArea() {
                 if (myGamePiece.crashWith(myObstacles[i])) {
                     clearInterval(globalInterval);
                     if (playAudio) {
-                        audioPlay1.pause();
-                        audioPlay1.currentTime = 0;
-                        audioPlay2.pause();
-                        audioPlay2.currentTime = 0;
+                        audioPlay.stop();
                     }
                     twitterCall();
                     addEntry(getScore());
