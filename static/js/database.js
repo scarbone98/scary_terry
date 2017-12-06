@@ -4,14 +4,34 @@
 let counter = 1;
 let firebaseRef = firebase.database().ref('leaderboard');
 let scores = [];
-function getScores() {
+let userCurrentScore;
+function getScores(score) {
+    userCurrentScore = score;
     firebaseRef.orderByChild('negativeScore').limitToFirst(15).once('value', function (snapshot) {
         snapshot.forEach(function (childSnapshots) {
             scores.push(parseInt(childSnapshots.child('score').val()));
         });
+        let user = firebase.auth().currentUser;
+        if (parseInt(score) > parseInt(scores[scores.length - 1]) || scores.length < 15) {
+            let userName = user.displayName;
+            if(userName === null){
+                userName = user.email.split("@")[0];
+            }
+            firebaseRef.child(user.uid + score).child('username').set(userName).then(() => {
+                firebaseRef.child(user.uid + score).child('score').set(score).then(() => {
+                    firebaseRef.child(user.uid + score).child('negativeScore').set(-1 * score).then(() => {
+                        initBoard();
+                    });
+                });
+            });
+        }
+        else {
+            initBoard();
+        }
     });
 }
 function initBoard() {
+    let user = firebase.auth().currentUser;
     counter = 1;
     let board = document.getElementById('leaderboard');
     while (board.firstChild) {
@@ -60,6 +80,11 @@ function initBoard() {
             row.appendChild(placeCol);
             row.appendChild(usernameCol);
             row.appendChild(scoreCol);
+            if((username.innerHTML === user.email.split("@")[0] ||
+                username.displayName === username.innerHTML) &&
+                parseInt(userCurrentScore) === parseInt(score.innerHTML)){
+                row.style.color = "red";
+            }
             board.appendChild(row);
             counter++;
         });
@@ -69,24 +94,7 @@ function initBoard() {
     }
 }
 function addEntry(score) {
-    getScores();
-    let user = firebase.auth().currentUser;
-    if (parseInt(score) > parseInt(scores[scores.length - 1]) || scores.length < 15) {
-        let userName = user.displayName;
-        if(userName === null){
-            userName = user.email.split("@")[0];
-        }
-        firebaseRef.child(user.uid + score).child('username').set(userName).then(() => {
-            firebaseRef.child(user.uid + score).child('score').set(score).then(() => {
-                firebaseRef.child(user.uid + score).child('negativeScore').set(-1 * score).then(() => {
-                    initBoard();
-                });
-            });
-        });
-    }
-    else {
-        initBoard();
-    }
+    getScores(score);
 }
 function signOut() {
     firebase.auth().signOut().then(() => {
