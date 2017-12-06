@@ -150,7 +150,7 @@ function update() {
     ctx.textAlign = "center";
     ctx.fillText("START GAME", window.innerWidth / 2, window.innerHeight / 2);
     ctx.font = "30pt Arial";
-    ctx.fillText("Music by by Kenet & Rez",  window.innerWidth / 2, window.innerHeight - parseInt(ctx.font));
+    ctx.fillText("Music by Kenet & Rez",  window.innerWidth / 2, window.innerHeight - parseInt(ctx.font));
     if (playAudio) {
         ctx.drawImage(speakerIcon, 32, 32);
     } else {
