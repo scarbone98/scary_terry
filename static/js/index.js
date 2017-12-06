@@ -187,6 +187,7 @@ function component(width, height, color, x, y, type) {
     this.ticks = 0;
     this.coinX = 0;
     this.starX = 0;
+    this.powerTicks = 0;
     this.update = function (image) {
         this.ticks++;
         let ctx = myGameArea.context;
@@ -200,7 +201,19 @@ function component(width, height, color, x, y, type) {
                 ctx.drawImage(sprite_idle, this.x + 3, this.y, 28 * 2, 20 * 2);
             }
             if (invincibility === true) {
-                ctx.drawImage(sprite_shield, this.x - 16, this.y - 24, 32 * 3, 32 * 3);
+                if(ptimer >= 8 && this.powerTicks >= 15 && this.powerTicks < 30){
+                    ctx.drawImage(sprite_shield, this.x - 16, this.y - 24, 32 * 3, 32 * 3);
+                    this.powerTicks++;
+                }
+                else if(ptimer >= 8 && this.powerTicks < 15){
+                    this.powerTicks++;
+                }
+                else if(ptimer >= 8 && this.powerTicks >= 30){
+                    this.powerTicks = 0;
+                }
+                else {
+                    ctx.drawImage(sprite_shield, this.x - 16, this.y - 24, 32 * 3, 32 * 3);
+                }
             }
         }
         else if (image === "score") {
