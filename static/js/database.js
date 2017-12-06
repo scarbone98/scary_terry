@@ -62,9 +62,11 @@ function initBoard() {
             row.appendChild(scoreCol);
             board.appendChild(row);
             counter++;
-            // scores.push(parseInt(score.innerHTML));
         });
     });
+    if (!leaderBoardOpen) {
+        toggleLeaderboard();
+    }
 }
 function addEntry(score) {
     getScores();
@@ -78,18 +80,12 @@ function addEntry(score) {
             firebaseRef.child(user.uid + score).child('score').set(score).then(() => {
                 firebaseRef.child(user.uid + score).child('negativeScore').set(-1 * score).then(() => {
                     initBoard();
-                    if (!leaderBoardOpen) {
-                        toggleLeaderboard();
-                    }
                 });
             });
         });
     }
     else {
         initBoard();
-        if (!leaderBoardOpen) {
-            toggleLeaderboard();
-        }
     }
 }
 function signOut() {

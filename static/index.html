@@ -37,7 +37,7 @@
         canvas {
             /*border: 1px solid #d3d3d3;*/
             /*background-color: #f1f1f1;*/
-            /*cursor: none;*/
+            cursor: none;
             -webkit-transform: translateZ(0);
             -moz-transform: translateZ(0);
             -ms-transform: translateZ(0);
@@ -46,9 +46,6 @@
         }
         body {
             background-color: #000;
-            /*background: #22c1c3;  !* fallback for old browsers *!*/
-            /*background: -webkit-linear-gradient(to right, #fdbb2d, #22c1c3);  !* Chrome 10-25, Safari 5.1-6 *!*/
-            /*background: linear-gradient(to right, #fdbb2d, #22c1c3); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
             overflow: hidden;
         }
     </style>
@@ -79,8 +76,5 @@
 </div>
 <button id="winnerToggle" data-toggle="modal" data-target="#winnerModal" style="display: none"></button>
 <button id="leaderboardButton" type="button" style="display: none" data-toggle="modal" data-target="#myModal"></button>
-<script>
-    initBoard();
-</script>
 </body>
 </html>

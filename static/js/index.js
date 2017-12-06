@@ -149,6 +149,8 @@ function update() {
     ctx.font = "60pt Monoton";
     ctx.textAlign = "center";
     ctx.fillText("START GAME", window.innerWidth / 2, window.innerHeight / 2);
+    ctx.font = "30pt Arial";
+    ctx.fillText("Music by by Kenet & Rez",  window.innerWidth / 2, window.innerHeight - parseInt(ctx.font));
     if (playAudio) {
         ctx.drawImage(speakerIcon, 32, 32);
     } else {
@@ -156,14 +158,14 @@ function update() {
     }
 }
 let menuHandler = function (event) {
-    let upperBound = (window.innerHeight / 2 - parseInt(myGameArea.context.font));
+    let upperBound = (window.innerHeight / 2 - parseInt(myGameArea.context.font)*2);
     let lowerBound = (window.innerHeight / 2);
     if (event.pageY >= upperBound && event.pageY <= lowerBound) {
         myGameArea.canvas.style.cursor = "none";
         clearInterval(myGameArea.interval);
         if (playAudio) {
             audioPlay = new Howl({
-                src: ['/assets/audio/ooidashtheme.mp3'],
+                src: ['/assets/audio/ooidashtheme2.mp3','/assets/audio/ooidashtheme2.oog'],
                 loop: true
             });
             audioPlay.play();
@@ -355,7 +357,6 @@ function updateGameArea() {
                     if (playAudio) {
                         audioPlay.stop();
                     }
-                    twitterCall();
                     addEntry(getScore());
                     if (!leaderBoardOpen) {
                         toggleLeaderboard();
@@ -371,7 +372,7 @@ function updateGameArea() {
                     diffscore += 25;
                     powerUps.splice(i, 1);
                 }
-                else if (powerUps[i].type === 2) {
+                else if (powerUps[i].type === 2 && !invincibility) {
                     invincibility = true;
                     powerUps.splice(i, 1);
                 }

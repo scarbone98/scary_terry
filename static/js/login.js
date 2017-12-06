@@ -20,7 +20,7 @@ function initApp() {
     canvas.context = canvas.getContext("2d");
     canvas.setAttribute("id", "mycanvas");
     document.body.insertBefore(canvas, document.body.childNodes[0]);
-    setInterval(update, 30);
+    setInterval(updateLogIn, 30);
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             window.location.href = "/index";
@@ -67,7 +67,7 @@ function createAccount() {
         errorMessage.html(error.message);
     });
 }
-function update() {
+function updateLogIn() {
     canvas.context.clearRect(0, 0, canvas.width, canvas.height);
     let height = 450;
     let width = 800;
