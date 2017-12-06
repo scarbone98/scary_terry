@@ -60,7 +60,9 @@ function createAccount() {
     let email = userName + "@gmail.com";
     let password = document.getElementById("inputPassword").value;
     firebase.auth().createUserWithEmailAndPassword(email, password).then((user) => {
-        window.location.href = "/index";
+        user.updateProfile({displayName: userName}).then(() => {
+            window.location.href = "/index";
+        })
     }).catch((error) => {
         errorMessage.html(error.message);
     });
