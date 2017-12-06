@@ -70,7 +70,10 @@ function addEntry(score) {
     getScores();
     let user = firebase.auth().currentUser;
     if (parseInt(score) > parseInt(scores[scores.length - 1]) || scores.length < 15) {
-        let userName = user.email.split("@")[0];
+        let userName = user.displayName;
+        if(userName === null){
+            userName = user.email.split("@")[0];
+        }
         firebaseRef.child(user.uid + score).child('username').set(userName).then(() => {
             firebaseRef.child(user.uid + score).child('score').set(score).then(() => {
                 firebaseRef.child(user.uid + score).child('negativeScore').set(-1 * score).then(() => {
