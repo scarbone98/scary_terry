@@ -68,15 +68,15 @@ function createAccount() {
     });
 }
 function updateLogIn() {
-    canvas.context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
     let height = 450;
     let width = 800;
     if (backgroundY > height) {
         backgroundY = 0;
     }
-    for (let j = 0; j < canvas.width + width * 2; j += width) {
-        for (let i = 0; i < canvas.height + height * 2; i += height) {
-            canvas.context.drawImage(background, 0, i - backgroundY, j - 100, canvas.height);
+    for (let j = 0; j < window.innerWidth + width * 2; j += width) {
+        for (let i = 0; i < window.innerHeight + height * 2; i += height) {
+            canvas.context.drawImage(background, 0, i - backgroundY, j - 100, window.innerHeight);
         }
     }
     backgroundY += 0.75;
