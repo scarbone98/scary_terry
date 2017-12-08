@@ -131,12 +131,14 @@ let myGameArea = {
         this.canvas.addEventListener('click', menuHandler);
     },
     clear: function () {
+        //Clears the canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         let height = 450;
         let width = 800;
         if (backgroundY > height) {
             backgroundY = 0;
         }
+        //Stars moving background
         for (let j = 0; j < myGameArea.canvas.width + width * 2; j += width) {
             for (let i = 0; i < myGameArea.canvas.height + height * 2; i += height) {
                 this.context.drawImage(background, 0, i - backgroundY, j - 100, myGameArea.canvas.height);
@@ -146,6 +148,7 @@ let myGameArea = {
     }
 };
 function update() {
+    //Updates start screen
     let ctx = myGameArea.context;
     myGameArea.clear();
     myGameArea.canvas.style.cursor = "auto";
@@ -162,6 +165,7 @@ function update() {
     }
 }
 let menuHandler = function (event) {
+    //Checks if Start Game has been clicked
     let upperBound = (window.innerHeight / 2 - parseInt(myGameArea.context.font)*2);
     let lowerBound = (window.innerHeight / 2);
     if (event.pageY >= upperBound && event.pageY <= lowerBound) {
@@ -174,6 +178,7 @@ let menuHandler = function (event) {
         myGameArea.interval = setInterval(updateGameArea, updateSpeed);
         globalInterval = myGameArea.interval;
     }
+    //Checks if audio is enabled or not
     else if (event.pageY <= 32 + 32 && event.pageY >= 32
         && event.pageX <= 32 + 32 && event.pageX >= 32) {
         playAudio = !playAudio;
@@ -193,6 +198,7 @@ function component(width, height, color, x, y, type) {
     this.update = function (image) {
         this.ticks++;
         let ctx = myGameArea.context;
+        //Updates character
         if (image === "idle") {
             if (this.ticks >= 30) {
                 this.ticks = 0;
@@ -218,12 +224,14 @@ function component(width, height, color, x, y, type) {
                 }
             }
         }
+        //Updates score
         else if (image === "score") {
             ctx.fillStyle = color;
             ctx.font = "30px Arial";
             ctx.textAlign = "start";
             ctx.fillText("Score: " + getScore(), 10, 50);
         }
+        //Updates gems
         else if (image === "coin") {
             if (this.coinX > 3) {
                 this.coinX = 0;
@@ -240,6 +248,7 @@ function component(width, height, color, x, y, type) {
             }
             this.ticks++;
         }
+        //Updates all the rocks/asteroids
         else if (image === "ooid") {
             if (this.type === 1) {
                 ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
@@ -254,6 +263,7 @@ function component(width, height, color, x, y, type) {
                 ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
             }
         }
+        //Updates the blinking stars in the background
         else if (image === "star") {
             if (this.starX > 3) {
                 this.starX = 0;
@@ -273,6 +283,7 @@ function component(width, height, color, x, y, type) {
             }
             this.ticks++;
         }
+        //Updates the different planets in the background
         else if (image === "planet") {
             if (this.starX > 1) {
                 this.starX = 0;
@@ -308,27 +319,32 @@ function component(width, height, color, x, y, type) {
         this.hitRight();
         this.hitLeft();
     };
+    //Checks if the mouse is past the right side
     this.hitRight = function () {
         if (this.x > window.innerWidth - 64) {
             this.x = window.innerWidth - 64;
         }
     };
+    //Checks if mouse has past the left side
     this.hitLeft = function () {
         if (this.x < 0) {
             this.x = 0;
         }
     };
+    //Checks if mouse has hit the top window
     this.hitTop = function () {
         if (this.y < 0) {
             this.y = 0;
         }
     };
+    //Checks if mouse has hit the bottom window
     this.hitBottom = function () {
         let rockbottom = myGameArea.canvas.height - this.height;
         if (this.y > rockbottom) {
             this.y = rockbottom;
         }
     };
+    //Checks to see player has crashed with object
     this.crashWith = function (otherobj) {
         let myleft = this.x;
         let myright = this.x + (this.width);
