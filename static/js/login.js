@@ -74,8 +74,8 @@ function updateLogIn() {
     if (backgroundY > height) {
         backgroundY = 0;
     }
-    for (let j = 0; j < canvas.width + width * 4; j += width) {
-        for (let i = 0; i < canvas.height + height * 4; i += height) {
+    for (let j = 0; j < canvas.width + width * 2; j += width) {
+        for (let i = 0; i < canvas.height + height * 2; i += height) {
             canvas.context.drawImage(background, 0, i - backgroundY, j - 100, canvas.height);
         }
     }
