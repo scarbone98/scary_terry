@@ -1,109 +1,360 @@
 /**
  * Created by scarbone on 11/11/17.
+ * Contributed to by slondon too, okay?
  */
+let muteIcon;
 let myGamePiece;
 let myObstacles = [];
-let myScore;
-let interval = 150;
+let powerUps = [];
+let stars = [];
+let planets = [];
+let interval = 200;
 let globalInterval;
-let isJumping = false;
 let intervalCleared = false;
-let screenWidth = window.innerWidth
-    || document.documentElement.clientWidth
-    || document.body.clientWidth;
+let screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+let screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+let sprite_idle, sprite_jump, sprite_ooid, sprite_star1, sprite_star2, sprite_star3, sprite_earth;
+let sprite_moon, sprite_comet, sprite_mars, sprite_jupiter, sprite_ppower, sprite_meteor, sprite_shield;
+let background, backgroundY, coin;
+let bonusScore = 0;
+let mouseX, mouseY;
+let invincibility = false;
+let ptimer = 0;
+let difficulty = 1;
+let score = 0;
+let diffscore = 0;
+let difflevel = 1;
+let maxlevel = 4;
+let myScore;
+let updateSpeed = 15;
+let scoreflag = true; //when true the score counts;
+let playAudio = true;
+let speakerIcon;
+let audioPlay;
+function resizeCanvas() {
+    screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    let canvas = document.getElementById("mycanvas");
+    if (canvas.width < window.innerWidth) {
+        canvas.width = window.innerWidth;
+    }
 
-let screenHeight = window.innerHeight
-    || document.documentElement.clientHeight
-    || document.body.clientHeight;
-
-
-function startGame() {
-    myGamePiece = new component(47, 56, "red", 10, 120);
-    myGamePiece.gravity = 0.05;
-    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-    myGameArea.start();
+    if (canvas.height < window.innerHeight) {
+        canvas.height = window.innerHeight;
+    }
 }
+function startGame() {
+    //Init line for replaying
+    mouseY = 0;
+    mouseX = 0;
+    myObstacles = [];
+    powerUps = [];
+    stars = [];
+    planets = [];
+    bonusScore = 0;
+    backgroundY = 0;
+    ptimer = 0;
+    difficulty = 1;
+    diffscore = 0;
+    score = 0;
+    maxlevel = 4;
+    scoreflag = true;
+    myScore = new component(50, 50, 'white', 50, 10);
+    myGamePiece = new component((28 * 2) - 6, (20 * 2) - 1, "red", 10, 120);
+    myGameArea.start();
 
+}
+function getRandomColor() {
+    let letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 let myGameArea = {
     canvas: document.createElement("canvas"),
     start: function () {
-        this.canvas.width = screenWidth / 1.00025;
-        this.canvas.height = screenHeight / 1.10;
+        this.canvas.addEventListener('mousemove', function (e) {
+            mouseX = e.clientX - 32;
+            mouseY = e.clientY - 32;
+        });
+        //set sprites
+        audioPlay = new Howl({
+            src: ['/assets/audio/ooidashtheme2.mp3','/assets/audio/ooidashtheme2.oog'],
+            loop: true
+        });
+        speakerIcon = new Image();
+        speakerIcon.src = "../assets/icons/speaker.png";
+        muteIcon = new Image();
+        muteIcon.src = "../assets/icons/mute.png";
+        sprite_idle = new Image();
+        sprite_idle.src = "../assets/sprites/oldmanterry2.png";
+        sprite_jump = new Image();
+        sprite_jump.src = "../assets/sprites/oldmanterry1.png";
+        sprite_ooid = new Image();
+        sprite_ooid.src = "../assets/sprites/3829rock.png";
+        background = new Image();
+        background.src = "../assets/sprites/background.png";
+        coin = new Image();
+        coin.src = "../assets/sprites/6416diamond.png";
+        sprite_star1 = new Image();
+        sprite_star1.src = "../assets/sprites/star1.png";
+        sprite_star2 = new Image();
+        sprite_star2.src = "../assets/sprites/star2.png";
+        sprite_star3 = new Image();
+        sprite_star3.src = "../assets/sprites/star3.png";
+        sprite_earth = new Image();
+        sprite_earth.src = "../assets/sprites/earth.png";
+        sprite_moon = new Image();
+        sprite_moon.src = "../assets/sprites/moon.png";
+        sprite_comet = new Image();
+        sprite_comet.src = "../assets/sprites/comet.png";
+        sprite_mars = new Image();
+        sprite_mars.src = "../assets/sprites/mars.png";
+        sprite_meteor = new Image();
+        sprite_meteor.src = "../assets/sprites/meteor.png";
+        sprite_jupiter = new Image();
+        sprite_jupiter.src = "../assets/sprites/jupiter.png";
+        sprite_ppower = new Image();
+        sprite_ppower.src = "../assets/sprites/invinc.png";
+        sprite_shield = new Image();
+        sprite_shield.src = "../assets/sprites/shield.png";
+        //set canvas
+        this.canvas.setAttribute("id", "mycanvas");
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
-        this.interval = setInterval(updateGameArea, 15);
-        globalInterval = this.interval;
+        this.interval = setInterval(update, updateSpeed);
+        this.canvas.addEventListener('click', menuHandler);
     },
     clear: function () {
+        //Clears the canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let height = 450;
+        let width = 800;
+        if (backgroundY > height) {
+            backgroundY = 0;
+        }
+        //Stars moving background
+        for (let j = 0; j < myGameArea.canvas.width + width * 2; j += width) {
+            for (let i = 0; i < myGameArea.canvas.height + height * 2; i += height) {
+                this.context.drawImage(background, 0, i - backgroundY, j - 100, myGameArea.canvas.height);
+            }
+        }
+        backgroundY += 0.75;
     }
 };
-
+function update() {
+    //Updates start screen
+    let ctx = myGameArea.context;
+    myGameArea.clear();
+    myGameArea.canvas.style.cursor = "auto";
+    ctx.fillStyle = 'white';
+    ctx.font = "60pt Monoton";
+    ctx.textAlign = "center";
+    ctx.fillText("START GAME", window.innerWidth / 2, window.innerHeight / 2);
+    ctx.font = "30pt Arial";
+    ctx.fillText("Music by Kenet & Rez",  window.innerWidth / 2, window.innerHeight - parseInt(ctx.font));
+    if (playAudio) {
+        ctx.drawImage(speakerIcon, 32, 32);
+    } else {
+        ctx.drawImage(muteIcon, 32, 32);
+    }
+}
+let menuHandler = function (event) {
+    //Checks if Start Game has been clicked
+    let upperBound = (window.innerHeight / 2 - parseInt(myGameArea.context.font)*2);
+    let lowerBound = (window.innerHeight / 2);
+    if (event.pageY >= upperBound && event.pageY <= lowerBound) {
+        myGameArea.canvas.style.cursor = "none";
+        clearInterval(myGameArea.interval);
+        if (playAudio) {
+            audioPlay.play();
+        }
+        myGameArea.canvas.removeEventListener('click', menuHandler);
+        myGameArea.interval = setInterval(updateGameArea, updateSpeed);
+        globalInterval = myGameArea.interval;
+    }
+    //Checks if audio is enabled or not
+    else if (event.pageY <= 32 + 32 && event.pageY >= 32
+        && event.pageX <= 32 + 32 && event.pageX >= 32) {
+        playAudio = !playAudio;
+    }
+};
 function component(width, height, color, x, y, type) {
     this.type = type;
     this.score = 0;
     this.width = width;
     this.height = height;
-    this.speedX = 0;
-    this.speedY = 0;
     this.x = x;
     this.y = y;
-    this.gravity = 0;
-    this.gravitySpeed = 0;
+    this.ticks = 0;
+    this.coinX = 0;
+    this.starX = 0;
+    this.powerTicks = 0;
     this.update = function (image) {
-        ctx = myGameArea.context;
-        if (this.type === "text") {
-            ctx.font = this.width + " " + this.height;
-            ctx.fillStyle = color;
-            ctx.fillText(this.text, this.x, this.y);
-        } else {
-            if (image === "idle") {
-                let sprite = new Image();
-                sprite.src = "../assets/sprites/jump1.png";
-                ctx.drawImage(sprite, this.x, this.y, 47, 56);
+        this.ticks++;
+        let ctx = myGameArea.context;
+        //Updates character
+        if (image === "idle") {
+            if (this.ticks >= 30) {
+                this.ticks = 0;
             }
-            else if (image === "jump") {
-                let sprite = new Image();
-                sprite.src = "../assets/sprites/jump2.png";
-                ctx.drawImage(sprite, this.x, this.y, 45, 67);
+            if (this.ticks >= 15) {
+                ctx.drawImage(sprite_jump, this.x + 3, this.y, 28 * 2, 20 * 2);
+            } else if (this.ticks < 15) {
+                ctx.drawImage(sprite_idle, this.x + 3, this.y, 28 * 2, 20 * 2);
+            }
+            if (invincibility === true) {
+                if(ptimer >= 8 && this.powerTicks >= 15 && this.powerTicks < 30){
+                    ctx.drawImage(sprite_shield, this.x - 16, this.y - 24, 32 * 3, 32 * 3);
+                    this.powerTicks++;
+                }
+                else if(ptimer >= 8 && this.powerTicks < 15){
+                    this.powerTicks++;
+                }
+                else if(ptimer >= 8 && this.powerTicks >= 30){
+                    this.powerTicks = 0;
+                }
+                else {
+                    ctx.drawImage(sprite_shield, this.x - 16, this.y - 24, 32 * 3, 32 * 3);
+                }
+            }
+        }
+        //Updates score
+        else if (image === "score") {
+            ctx.fillStyle = color;
+            ctx.font = "30px Arial";
+            ctx.textAlign = "start";
+            ctx.fillText("Score: " + getScore(), 10, 50);
+        }
+        //Updates gems
+        else if (image === "coin") {
+            if (this.coinX > 3) {
+                this.coinX = 0;
+            }
+            if (this.type === 1) {
+                ctx.drawImage(coin, (16 * this.coinX), 0, 16, 16, this.x, this.y, 32, 32);
+            }
+            else if (this.type === 2) {
+                ctx.drawImage(sprite_ppower, (32 * this.coinX), 0, 32, 32, this.x, this.y, 32, 32);
+            }
+            if (this.ticks > 15) {
+                this.coinX++;
+                this.ticks = 0;
+            }
+            this.ticks++;
+        }
+        //Updates all the rocks/asteroids
+        else if (image === "ooid") {
+            if (this.type === 1) {
+                ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
+            }
+            else if (this.type === 2) {
+                ctx.drawImage(sprite_comet, this.x - 15, this.y - 2, 64, 64);
+            }
+            else if (this.type === 3) {
+                ctx.drawImage(sprite_meteor, this.x - 15, this.y, 64 * 2, 64 * 2);
             }
             else {
-                ctx.fillStyle = color;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.drawImage(sprite_ooid, this.x, this.y, 64, 64);
             }
+        }
+        //Updates the blinking stars in the background
+        else if (image === "star") {
+            if (this.starX > 3) {
+                this.starX = 0;
+            }
+            if (this.type === 1) {
+                ctx.drawImage(sprite_star1, (16 * this.starX), 0, 16, 16, this.x, this.y, 32, 32);
+            }
+            if (this.type === 2) {
+                ctx.drawImage(sprite_star2, (16 * this.starX), 0, 16, 16, this.x, this.y, 32, 32);
+            }
+            if (this.type === 3) {
+                ctx.drawImage(sprite_star3, (16 * this.starX), 0, 16, 16, this.x, this.y, 32, 32);
+            }
+            if (this.ticks > 15) {
+                this.starX++;
+                this.ticks = 0;
+            }
+            this.ticks++;
+        }
+        //Updates the different planets in the background
+        else if (image === "planet") {
+            if (this.starX > 1) {
+                this.starX = 0;
+            }
+            if (this.type === 1) {
+                ctx.drawImage(sprite_earth, (64 * this.starX), 0, 64, 64, this.x, this.y, 64 * 3, 64 * 3);
+            }
+            else if (this.type === 2) {
+                ctx.drawImage(sprite_moon, (64 * this.starX), 0, 64, 64, this.x, this.y, 32 * 3, 32 * 3);
+            }
+            else if (this.type === 3) {
+                ctx.drawImage(sprite_mars, (64 * this.starX), 0, 64, 64, this.x, this.y, 64 * 3, 64 * 3);
+            }
+            else if (this.type === 4) {
+                ctx.drawImage(sprite_jupiter, this.x, this.y, 128 * 3, 128 * 3);
+            }
+            if (this.ticks > 15) {
+                this.starX++;
+                this.ticks = 0;
+            }
+            this.ticks++;
+        }
+        else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
         }
     };
     this.newPos = function () {
-        this.gravitySpeed += this.gravity;
-        this.x += this.speedX;
-        this.y += this.speedY + this.gravitySpeed;
+        this.x = mouseX;
+        this.y = mouseY;
         this.hitBottom();
         this.hitTop();
+        this.hitRight();
+        this.hitLeft();
     };
+    //Checks if the mouse is past the right side
+    this.hitRight = function () {
+        if (this.x > window.innerWidth - 64) {
+            this.x = window.innerWidth - 64;
+        }
+    };
+    //Checks if mouse has past the left side
+    this.hitLeft = function () {
+        if (this.x < 0) {
+            this.x = 0;
+        }
+    };
+    //Checks if mouse has hit the top window
     this.hitTop = function () {
         if (this.y < 0) {
             this.y = 0;
-            this.gravitySpeed = 0;
         }
     };
+    //Checks if mouse has hit the bottom window
     this.hitBottom = function () {
-        var rockbottom = myGameArea.canvas.height - this.height;
+        let rockbottom = myGameArea.canvas.height - this.height;
         if (this.y > rockbottom) {
             this.y = rockbottom;
-            this.gravitySpeed = 0;
         }
     };
+    //Checks to see player has crashed with object
     this.crashWith = function (otherobj) {
-        var myleft = this.x;
-        var myright = this.x + (this.width);
-        var mytop = this.y;
-        var mybottom = this.y + (this.height);
-        var otherleft = otherobj.x;
-        var otherright = otherobj.x + (otherobj.width);
-        var othertop = otherobj.y;
-        var otherbottom = otherobj.y + (otherobj.height);
-        var crash = true;
+        let myleft = this.x;
+        let myright = this.x + (this.width);
+        let mytop = this.y;
+        let mybottom = this.y + (this.height);
+        let otherleft = otherobj.x;
+        let otherright = otherobj.x + (otherobj.width);
+        let othertop = otherobj.y;
+        let otherbottom = otherobj.y + (otherobj.height);
+        let crash = true;
         if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
             crash = false;
         }
@@ -112,91 +363,184 @@ function component(width, height, color, x, y, type) {
 }
 
 function updateGameArea() {
-    var x, height, gap, minHeight, maxHeight, minGap, maxGap;
-    for (let i = 0; i < myObstacles.length; i += 1) {
-        if (myGamePiece.crashWith(myObstacles[i])) {
-            clearInterval(globalInterval);
-            intervalCleared = true;
-            twitterCall();
-            if (getScore() > scores[scores.length - 1] || scores.length < 15) {
-                toggleAddEntry();
+    let x, gap, minHeight, maxHeight, minGap, maxGap;
+    //Check for collisions
+    if (myGameArea.frameNo > 10) {
+        for (let i = 0; i < myObstacles.length; i += 1) {
+            if (invincibility === false) {
+                if (myGamePiece.crashWith(myObstacles[i])) {
+                    clearInterval(globalInterval);
+                    if (playAudio) {
+                        audioPlay.stop();
+                    }
+                    addEntry(getScore());
+                    if (!leaderBoardOpen) {
+                        toggleLeaderboard();
+                    }
+                    startGame();
+                }
             }
-            else if (!leaderBoardOpen) {
-                toggleLeaderboard();
+        }
+        for (let i = 0; i < powerUps.length; i++) {
+            if (myGamePiece.crashWith(powerUps[i])) {
+                if (powerUps[i].type === 1) {
+                    bonusScore += 25;
+                    diffscore += 25;
+                    powerUps.splice(i, 1);
+                }
+                else if (powerUps[i].type === 2 && !invincibility) {
+                    invincibility = true;
+                    powerUps.splice(i, 1);
+                }
             }
-            return;
         }
     }
     myGameArea.clear();
-    if(myGameArea.frameNo === 0){
-        let width = screenWidth/2;
-        while(width > 0){
+
+    if (invincibility === true && (myGameArea.frameNo % 60) === 0) {
+        ptimer++;
+    }
+    if (invincibility === true && ptimer >= 10) {
+        invincibility = false;
+        ptimer = 0;
+    }
+
+    //Generate objects
+    if (myGameArea.frameNo === 0) {
+        let width = screenWidth / 2;
+        while (width - interval / 3 > 0) {
             x = myGameArea.canvas.width;
             minHeight = 20;
-            maxHeight = 200;
-            height = Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
+            maxHeight = 20;
             minGap = 80;
             maxGap = 200;
             gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-            myObstacles.push(new component(10, height, "green", x - width, 0));
-            myObstacles.push(new component(10, x - height - gap, "green", x - width, height + gap));
             width -= interval;
         }
     }
-    else if (myGameArea.frameNo === 1 || everyinterval(interval)) {
-        x = myGameArea.canvas.width;
-        minHeight = 20;
-        maxHeight = 200;
-        height = Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
-        minGap = 80;
-        maxGap = 200;
-        gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-        myObstacles.push(new component(10, height, "green", x, 0));
-        myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
+    if ((myGameArea.frameNo % 30) === 0) {
+        for (let i = 0; i < difficulty; i++) {
+            let color = getRandomColor();
+            let xspot = Math.random() * (screenWidth - 64);
+            let offset = Math.random() * 15;
+            let yspot = screenHeight + offset;
+            let rockType;
+            if (difflevel > 2) {
+                rockType = (Math.random() * 100);
+            } else {
+                rockType = (Math.random() * 75);
+            }
+            let obs;
+            if (rockType <= 50) {
+                obs = new component(50, 50, color, xspot, yspot, 1);
+            }
+            else if (rockType <= 75) {
+                obs = new component(30, 30, color, xspot, yspot, 2);
+            }
+            else if (rockType <= 100) {
+                obs = new component(100, 120, color, xspot, yspot, 3);
+            }
+            myObstacles.push(obs);
+            let powerUp = Math.random() * 100;
+            if (powerUp >= 60) {
+                powerUps.push(new component(30, 45, color, xspot, yspot, 1));
+            }
+            else if (powerUp >= 55) {
+                powerUps.push(new component(32, 32, color, xspot, yspot, 2));
+            }
+        }
     }
+    if ((myGameArea.frameNo % 60) === 0) {
+        let starType = Math.random() * 150;
+        let color = getRandomColor();
+        let xspot = Math.random() * (screenWidth - 64);
+        let yspot = screenHeight;
+        if (starType <= 50) {
+            stars.push(new component(16, 16, color, xspot, yspot, 1))
+        }
+        else if (starType <= 80) {
+            stars.push(new component(16, 16, color, xspot, yspot, 2));
+        }
+        else if (starType <= 150) {
+            stars.push(new component(16, 16, color, xspot, yspot, 3));
+        }
+    }
+
+    //Update Score
+    if (scoreflag === true) {
+        if ((myGameArea.frameNo % 30) === 0) {
+            score++;
+            diffscore++;
+            scoreflag = false;
+        }
+    } else {
+        scoreflag = true;
+    }
+
+    //Update Everything
     myGameArea.frameNo += 1;
-    for (let i = 0; i < myObstacles.length; i += 1) {
-        myObstacles[i].x += -1;
-        myObstacles[i].update();
+    for (let i = 0; i < stars.length; i++) {
+        if (stars[i].type === 3) {
+            stars[i].y -= 1;
+        }
+        else if (stars[i].type === 2) {
+            stars[i].y += 0.5;
+        }
+        stars[i].y -= 1;
+        stars[i].update("star");
+        if (stars[i].y < -10) {
+            stars.splice(i, 1);
+        }
     }
-    myScore.text = "SCORE: " + myGameArea.frameNo;
-    myScore.update();
+    for (let i = 0; i < planets.length; i++) {
+        planets[i].y -= 1;
+        planets[i].update("planet");
+        if (planets[i].y < -500) {
+            planets.splice(i, 1);
+        }
+    }
+    for (let i = 0; i < myObstacles.length; i++) {
+        if (myObstacles[i].type === 1) {
+            myObstacles[i].y -= 5;
+        } else if (myObstacles[i].type === 2) {
+            myObstacles[i].y -= 6;
+        } else if (myObstacles[i].type === 3) {
+            myObstacles[i].y -= 4;
+        }
+        myObstacles[i].update("ooid");
+        if (myObstacles[i].y < -512) {
+            myObstacles.splice(i, 1);
+        }
+    }
+    for (let i = 0; i < powerUps.length; i++) {
+        powerUps[i].y -= 3;
+        powerUps[i].update("coin");
+        if (powerUps[i].y < -512) {
+            powerUps.splice(i, 1);
+        }
+    }
+    if (diffscore >= 500) {
+        let color = getRandomColor();
+        let xspot = Math.random() * (screenWidth - 64);
+        let yspot = screenHeight;
+        let obs = new component(64, 64, color, xspot, yspot, difflevel);
+        planets.push(obs);
+        diffscore = 0;
+        difflevel++;
+        if (difflevel > maxlevel) {
+            difflevel = 1;
+        }
+        difficulty++;
+    }
+    myScore.update("score");
     myGamePiece.newPos();
-    if(isJumping) {
-        myGamePiece.update("jump");
-    }
-    else {
-        myGamePiece.update("idle");
-    }
-}
-
-function everyinterval(n) {
-    return (myGameArea.frameNo / n) % 1 === 0;
-}
-
-function accelerate(n) {
-    myGamePiece.gravity = n;
+    myGamePiece.update("idle");
 }
 function getScore() {
-    return myGameArea.frameNo;
+    return score + bonusScore;
 }
 function restartGame() {
     if (intervalCleared) {
         location.reload();
     }
 }
-document.addEventListener('keydown', function (event) {
-    let spaceBar = 32;
-    if (event.keyCode === spaceBar) {
-        event.preventDefault();
-        accelerate(-0.2);
-        isJumping = true;
-    }
-});
-document.addEventListener('keyup', function (event) {
-    let spaceBar = 32;
-    if (event.keyCode === spaceBar) {
-        accelerate(0.05);
-        isJumping = false;
-    }
-});

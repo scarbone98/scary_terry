@@ -13,21 +13,26 @@ let client = new Twitter({
     access_token_secret: "mAsG2VB4vNPabpN6X8yuA0D3UL3xgnnt3lt1I3pg5uf5V"
 });
 app.use(bodyParser.json());
-app.use('/', express.static('static'));
-
+app.use("/css", express.static(__dirname + '/static/css'));
+app.use("/js", express.static(__dirname + '/static/js'));
+app.use("/assets", express.static(__dirname + '/static/assets'));
 app.get('/', function (req, res) {
-
+    return res.sendFile(__dirname + "/static/login.html");
 });
 app.post('/twitterCall', function (req, res) {
-    client.get("https://api.twitter.com/1.1/search/tweets.json?q=geology&count=10",
+    client.get("https://api.twitter.com/1.1/search/tweets.json?q=space&count=10",
         [], function (error, tweets, response) {
             if (error) {
                 return res.status(400).send(error);
             } else {
                 let picker = Math.floor(Math.random() * 10);
+                if(tweets.statuses[picker] !== undefined)
                 return res.status(200).send(tweets.statuses[picker].text);
             }
         });
+});
+app.get("/index", function (req, res) {
+    return res.sendFile(__dirname + "/static/index.html");
 });
 let port = process.env.PORT || 8000;
 app.listen(port);
